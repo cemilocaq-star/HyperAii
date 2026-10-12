@@ -1,0 +1,3454 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<title>Badımcan Bəndələr 🍆</title>
+<style>
+  html, body { margin:0; padding:0; overflow:hidden; background:#111; font-family: 'Segoe UI', Arial, sans-serif; }
+  canvas { display:block; }
+
+  /* ---------- ÇOX-EKRANLI MENYU / LOBBY ---------- */
+  #menu {
+    position:fixed; inset:0; background:radial-gradient(circle at 50% 20%, #3a1155, #170428 70%);
+    z-index:50; color:white; overflow:auto;
+    display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;
+  }
+  .screen { display:none; width:100%; max-width:420px; }
+  .screen.active { display:block; animation: screenIn 0.35s ease-out; }
+  @keyframes screenIn { from { opacity:0; transform:scale(0.94) translateY(8px);} to { opacity:1; transform:scale(1) translateY(0);} }
+
+  .card {
+    background:rgba(20,8,35,0.72); border:1px solid rgba(255,255,255,0.08);
+    padding:28px 30px; border-radius:20px; box-shadow:0 12px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+    backdrop-filter:blur(6px);
+  }
+  .logo { font-size:30px; font-weight:900; text-align:center; margin:0 0 2px; letter-spacing:0.5px; }
+  .tagline { text-align:center; opacity:0.65; font-size:13px; margin-bottom:22px; }
+
+  .stagger > * { opacity:0; animation: itemIn 0.4s ease-out forwards; }
+  .stagger > *:nth-child(1){ animation-delay:0.02s; }
+  .stagger > *:nth-child(2){ animation-delay:0.07s; }
+  .stagger > *:nth-child(3){ animation-delay:0.12s; }
+  .stagger > *:nth-child(4){ animation-delay:0.17s; }
+  .stagger > *:nth-child(5){ animation-delay:0.22s; }
+  @keyframes itemIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+  #menu input, #menu select {
+    width:100%; padding:12px 14px; margin:6px 0; border-radius:10px; border:1px solid rgba(255,255,255,0.12);
+    font-size:15px; box-sizing:border-box; background:rgba(255,255,255,0.06); color:white; outline:none;
+    transition:border-color 0.15s, background 0.15s;
+  }
+  #menu input:focus, #menu select:focus { border-color:#a86bff; background:rgba(255,255,255,0.1); }
+  #menu input::placeholder { color:rgba(255,255,255,0.4); }
+  #menu label { display:block; text-align:left; font-size:12px; opacity:0.65; margin-top:12px; margin-bottom:2px; text-transform:uppercase; letter-spacing:0.5px; }
+
+  .btn {
+    display:block; width:100%; padding:13px; margin-top:10px; border-radius:12px; border:none;
+    font-size:15px; font-weight:700; cursor:pointer; color:white;
+    background:linear-gradient(135deg,#8e2de2,#a13ff5); box-shadow:0 4px 14px rgba(142,45,226,0.35);
+    transition:transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  }
+  .btn:hover { filter:brightness(1.12); transform:translateY(-1px); }
+  .btn:active { transform:translateY(0) scale(0.97); box-shadow:0 2px 6px rgba(142,45,226,0.3); }
+  .btn:disabled { background:#463a52; color:rgba(255,255,255,0.4); cursor:not-allowed; box-shadow:none; transform:none; filter:none; }
+  .btn.secondary { background:rgba(255,255,255,0.08); box-shadow:none; }
+  .btn.secondary:hover { background:rgba(255,255,255,0.14); }
+  .btn.danger { background:linear-gradient(135deg,#b0293f,#e0455f); }
+  .btn.small { padding:8px 12px; font-size:13px; width:auto; display:inline-block; }
+
+
+  /* ---------- ƏSAS MENYU: landscape / compact / room-first ---------- */
+  #menu { padding:max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+  #screen-main { max-width:880px; }
+  .mm-card { padding:clamp(14px,3vh,26px) clamp(16px,3vw,30px); background:linear-gradient(160deg,rgba(60,22,95,0.72),rgba(20,8,35,0.78)); }
+  .mm-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:clamp(8px,2vh,18px); }
+  .mm-brand .logo { text-align:left; font-size:clamp(20px,3.6vw,30px); }
+  .mm-brand .tagline { text-align:left; margin:2px 0 0; }
+  .mm-head .connBadge { margin:0; padding:6px 12px; flex:0 0 auto; white-space:nowrap; }
+  .mm-body { display:grid; grid-template-columns:minmax(200px,0.8fr) 1.3fr; gap:clamp(12px,2.5vw,24px); align-items:stretch; }
+  .mm-profile { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:clamp(12px,2vh,18px); display:flex; flex-direction:column; justify-content:center; }
+  .mm-title { font-size:11px; letter-spacing:1.5px; opacity:.55; font-weight:800; }
+  .mm-avatar { font-size:clamp(34px,7vh,56px); text-align:center; margin:clamp(2px,1vh,8px) 0; }
+  .mm-actions { display:flex; flex-direction:column; justify-content:center; gap:clamp(6px,1.4vh,12px); }
+  .mm-actions .btn { margin-top:0; }
+  .mm-play { padding:clamp(16px,3.4vh,26px) 14px; font-size:clamp(17px,2.6vh,22px); letter-spacing:.5px; background:linear-gradient(135deg,#a13ff5,#e04cf0); box-shadow:0 6px 22px rgba(190,70,240,0.45); }
+  .mm-row2 { display:grid; grid-template-columns:1fr 1fr; gap:clamp(6px,1.4vh,12px); }
+  .mm-row3 { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(6px,1.4vh,10px); }
+  .mm-tile { padding:clamp(12px,2.4vh,18px) 8px; }
+  .mm-nav { padding:10px 4px; font-size:clamp(11px,1.7vh,13px); white-space:nowrap; }
+  #screen-main .errortext { min-height:0; }
+  @media (max-width:640px) and (orientation:portrait) {
+    .mm-body { grid-template-columns:1fr; }
+    .mm-profile { flex-direction:row; align-items:center; flex-wrap:wrap; gap:8px; }
+    .mm-profile .mm-avatar { margin:0; }
+    .mm-profile input { flex:1 1 140px; width:auto; }
+    .mm-profile label, .mm-title { display:none; }
+    .mm-head { flex-wrap:wrap; }
+  }
+  @media (max-height:460px) { .mm-avatar, .mm-brand .tagline { display:none; } .mm-card { padding:10px 16px; } }
+
+
+  /* ---------- CREATE / JOIN / LOBBY: landscape (eyni dil, eyni ID-lər) ---------- */
+  #screen-create { max-width:720px; } #screen-join { max-width:520px; } #screen-lobby { max-width:820px; }
+  .cr-card, .jn-card { padding:clamp(14px,3vh,24px) clamp(16px,3vw,28px); }
+  .cr-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:0 clamp(10px,2vw,18px); }
+  .cr-grid label { margin-top:8px; }
+  .jn-card #roomCodeInput { font-size:clamp(24px,5vh,34px) !important; padding:clamp(12px,2.4vh,18px) 14px; }
+  .lb-card { display:grid; grid-template-columns:1.3fr 1fr; gap:clamp(12px,2.5vw,24px); padding:clamp(14px,3vh,24px) clamp(16px,3vw,28px); align-items:start; }
+  .lb-right { display:flex; flex-direction:column; justify-content:center; gap:8px; }
+  .lb-right .btn { margin-top:0; padding:clamp(12px,2.4vh,16px); }
+  .lb-left .playerlist { max-height:min(38vh,300px); overflow:auto; }
+  @media (max-width:640px) and (orientation:portrait) { .lb-card { grid-template-columns:1fr; } .lb-left .playerlist { max-height:30vh; } }
+  @media (max-height:460px) { .lb-card { padding:10px 14px; } .lb-left .playerlist { max-height:30vh; } .cr-grid label { margin-top:4px; } .cr-card, .jn-card { padding:10px 14px; } }
+
+  .backlink { text-align:center; margin-top:14px; font-size:13px; opacity:0.6; cursor:pointer; }
+  .backlink:hover { opacity:1; }
+  .errortext { color:#ff8fa3; font-size:13px; margin-top:8px; min-height:16px; text-align:center; }
+
+  /* Room lobby */
+  .roomcode-box {
+    text-align:center; margin:6px 0 18px; padding:16px; border-radius:14px;
+    background:rgba(255,255,255,0.06); border:1px dashed rgba(168,107,255,0.5);
+  }
+  .roomcode-label { font-size:11px; opacity:0.6; text-transform:uppercase; letter-spacing:1px; }
+  .roomcode-value {
+    font-size:34px; font-weight:900; letter-spacing:6px; margin:4px 0;
+    background:linear-gradient(135deg,#e6c8ff,#ffffff); -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation: codeReveal 0.5s ease-out;
+  }
+  @keyframes codeReveal { from{opacity:0; letter-spacing:14px;} to{opacity:1; letter-spacing:6px;} }
+  .copybtn { font-size:12px; padding:5px 10px; }
+  .copybtn.copied { background:#2ecc71 !important; }
+
+  .playercount { text-align:center; font-size:13px; opacity:0.75; margin-bottom:10px; }
+  .playerlist { max-height:220px; overflow-y:auto; margin-bottom:12px; }
+  .playercard {
+    display:flex; align-items:center; gap:10px; padding:10px 12px; margin-bottom:6px;
+    background:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(255,255,255,0.06);
+    animation: cardIn 0.3s ease-out;
+  }
+  @keyframes cardIn { from{opacity:0; transform:translateX(-10px);} to{opacity:1; transform:translateX(0);} }
+  .playercard.leaving { animation: cardOut 0.25s ease-in forwards; }
+  @keyframes cardOut { to{opacity:0; transform:translateX(10px); height:0; margin:0; padding:0;} }
+  .avatar {
+    width:32px; height:32px; border-radius:50%; flex-shrink:0;
+    background:linear-gradient(135deg,#8e2de2,#4a1352); display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px;
+  }
+  .pname { flex:1; font-size:14px; font-weight:600; }
+  .pname .you { opacity:0.55; font-size:11px; font-weight:400; }
+  .hostcrown { font-size:14px; }
+  .readydot {
+    width:10px; height:10px; border-radius:50%; background:#555; flex-shrink:0;
+    transition:background 0.2s;
+  }
+  .readydot.ready { background:#2ecc71; box-shadow:0 0 8px #2ecc71; animation:pulseReady 1s infinite; }
+  @keyframes pulseReady { 0%,100%{opacity:1;} 50%{opacity:0.55;} }
+  .readytext { font-size:11px; opacity:0.7; width:70px; text-align:right; }
+
+  .discbadge { font-size:10px; color:#ffb454; margin-left:4px; }
+
+  .teamswitch { display:flex; gap:8px; margin-bottom:10px; }
+  .teamswitch button {
+    flex:1; padding:9px; border-radius:9px; border:1px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.05); color:white; cursor:pointer; font-size:13px; font-weight:600;
+    transition:all 0.15s;
+  }
+  .teamswitch button.active.team1 { background:#e63946; border-color:#e63946; }
+  .teamswitch button.active.team2 { background:#457bff; border-color:#457bff; }
+
+  .toast {
+    position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-20px); opacity:0;
+    background:linear-gradient(135deg,#ffd93d,#ff9f1c); color:#2a1a00; font-weight:800; font-size:14px;
+    padding:12px 22px; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4); z-index:60;
+    transition:all 0.35s ease; pointer-events:none; text-align:center;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  .cosmeticcard {
+    display:flex; align-items:center; gap:12px; padding:14px; margin-bottom:10px; border-radius:14px;
+    background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); transition:transform 0.15s;
+  }
+  .cosmeticcard:hover { transform:scale(1.02); background:rgba(255,255,255,0.08); }
+  .cosmeticpreview {
+    width:46px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-size:22px; background:linear-gradient(135deg,#2b2b40,#1a1a2e); flex-shrink:0;
+  }
+  .cosmeticinfo { flex:1; text-align:left; }
+  .cosmeticname { font-weight:700; font-size:14px; }
+  .cosmeticstatus { font-size:11px; opacity:0.65; margin-top:2px; }
+  .cosmeticcard.locked .cosmeticpreview { filter:grayscale(1) brightness(0.5); }
+  .cosmeticcard.equipped { border-color:#2ecc71; }
+
+  @media (max-width:480px) {
+    .card { padding:22px 18px; border-radius:16px; }
+    .roomcode-value { font-size:28px; letter-spacing:4px; }
+  }
+  @media (orientation: landscape) and (max-height:480px) {
+    #menu { align-items:flex-start; padding-top:8px; }
+    .card { padding:14px 18px; }
+    .logo { font-size:22px; margin-bottom:0; }
+    .tagline { margin-bottom:10px; }
+  }
+
+  #hud { position:fixed; inset:0; pointer-events:none; z-index:10; display:none; color:white; font-weight:bold; text-shadow:0 1px 3px rgba(0,0,0,0.8); }
+  #crosshair { position:absolute; top:50%; left:50%; width:6px; height:6px; margin:-3px; border-radius:50%; background:white; }
+  #health { position:absolute; bottom:24px; left:24px; font-size:22px; }
+  #healthbar { width:200px; height:14px; background:#333; border-radius:7px; overflow:hidden; margin-top:4px; }
+  #healthfill { height:100%; background:#e63946; width:100%; transition:width 0.2s; }
+  #staminabar { width:200px; height:9px; background:#222; border-radius:5px; overflow:hidden; margin-top:6px; }
+  #staminafill { height:100%; background:#3ddc84; width:100%; transition:width 0.15s; }
+  #staminabar.shake { animation: staminaShake 0.3s; }
+  @keyframes staminaShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
+  #dashBtn {
+    position:absolute; bottom:26px; right:26px; width:78px; height:78px; border-radius:50%;
+    background:rgba(61,220,132,0.25); border:2px solid #3ddc84; color:white; font-weight:800; font-size:13px;
+    pointer-events:auto; cursor:pointer; display:flex; align-items:center; justify-content:center; text-align:center;
+    transition:all 0.12s; user-select:none;
+  }
+  #dashBtn:active { transform:scale(0.9); }
+  /* weapon slot box: gun / knife / bomb (server owns the slot; this only requests and shows it) */
+  #slotBox { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:8px; pointer-events:auto; user-select:none; }
+  .slotBtn { position:relative; overflow:hidden; width:64px; height:54px; border-radius:12px; background:rgba(20,8,35,0.55); border:2px solid rgba(255,255,255,0.18); color:white; font-size:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; text-shadow:none; }
+  .slotBtn small { font-size:10px; font-weight:800; opacity:.7; }
+  .slotBtn.active { border-color:#c26bff; background:rgba(150,60,240,0.35); box-shadow:0 0 12px rgba(194,107,255,0.6); }
+  .slotBtn .slotCd { position:absolute; left:0; right:0; bottom:0; height:0; background:rgba(0,0,0,0.6); pointer-events:none; }
+  #dashBtn.disabled { border-color:#555; background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.35); }
+
+  /* ---- Match HUD (server-driven) ---- */
+  #matchTimer { position:absolute; top:12px; left:50%; transform:translateX(-50%); font-weight:800; font-size:18px; letter-spacing:1px; background:rgba(20,10,40,0.55); padding:4px 14px; border-radius:10px; color:#fff; pointer-events:none; }
+  #bountyBadge { position:absolute; top:46px; left:50%; transform:translateX(-50%); font-size:13px; background:rgba(120,20,40,0.6); padding:3px 10px; border-radius:10px; color:#fff; display:none; pointer-events:none; }
+  #matchEnd { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(10,4,25,0.82); z-index:60; padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  #matchEnd.show { display:flex; }
+  #matchEndCard { background:rgba(40,20,80,0.85); border:1px solid rgba(180,140,255,0.4); border-radius:16px; padding:18px 22px; max-width:min(92vw,520px); max-height:92vh; overflow:auto; color:#fff; text-align:center; }
+  #matchEndCard h2 { margin:0 0 8px; }
+  #matchEndCard table { width:100%; border-collapse:collapse; font-size:14px; margin:8px 0; }
+  #matchEndCard td, #matchEndCard th { padding:3px 6px; }
+  #matchEndAwards { font-size:13px; opacity:.9; margin-bottom:8px; }
+  #matchEndCard button { margin:4px; padding:8px 16px; border-radius:10px; border:0; font-weight:700; cursor:pointer; }
+  #chaosBanner {
+    position:fixed; top:22%; left:50%; transform:translate(-50%,-50%) scale(0.8); opacity:0;
+    font-size:40px; font-weight:900; color:#fff; text-align:center; z-index:43; pointer-events:none;
+    text-shadow:0 0 20px #ff5cff, 0 0 6px #000; transition:all 0.4s ease-out;
+  }
+  #chaosBanner.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  #pinkOverlay { position:fixed; inset:0; background:radial-gradient(circle, rgba(255,105,220,0.18), rgba(255,20,147,0.12)); opacity:0; pointer-events:none; z-index:15; transition:opacity 0.5s; }
+  #interactBtn {
+    display:none; position:absolute; bottom:118px; right:34px; width:60px; height:60px; border-radius:50%;
+    background:rgba(255,225,0,0.25); border:2px solid #ffe100; color:white; font-weight:800; font-size:11px;
+    pointer-events:auto; cursor:pointer; align-items:center; justify-content:center; text-align:center; line-height:1.1;
+  }
+  #emoteBtn {
+    position:absolute; bottom:26px; left:26px; width:52px; height:52px; border-radius:50%;
+    background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.3); color:white; font-size:20px;
+    pointer-events:auto; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  #killfeed { position:absolute; top:20px; right:20px; width:280px; text-align:right; font-size:14px; }
+  #killfeed div { background:rgba(0,0,0,0.5); margin-bottom:4px; padding:6px 10px; border-radius:6px; animation:fade 5s forwards; }
+  @keyframes fade { 0%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;} }
+  #scoreboard { position:absolute; top:20px; left:20px; font-size:14px; background:rgba(0,0,0,0.4); padding:8px 12px; border-radius:8px; }
+  #pingBadge {
+    position:absolute; top:20px; left:50%; transform:translateX(-50%); font-size:12px; font-weight:700;
+    background:rgba(0,0,0,0.4); padding:6px 10px; border-radius:8px; color:#3ddc84; letter-spacing:0.5px;
+  }
+  #pingBadge.warn { color:#ffcc33; }
+  #pingBadge.bad { color:#ff5c5c; }
+  #pingBadge.hidden { display:none; }
+  #trollmsg { position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); font-size:28px; color:#ff5cff; display:none; }
+  #lightning { position:fixed; inset:0; background:white; opacity:0; pointer-events:none; z-index:40; }
+  #redflash { position:fixed; inset:0; background:radial-gradient(circle, rgba(180,0,0,0.25), rgba(90,0,0,0.7)); opacity:0; pointer-events:none; z-index:41; transition:opacity 0.4s; }
+  #punchtext {
+    position:fixed; top:36%; left:50%; transform:translate(-50%,-50%);
+    font-size:36px; font-weight:900; color:#fff; text-align:center; line-height:1.2;
+    text-shadow:0 0 16px #ff0000, 0 0 4px #000; opacity:0; pointer-events:none; z-index:42; transition:opacity 0.4s;
+  }
+  /* Phase 7: character preview */
+  #charPreview { display:flex; justify-content:center; margin:8px 0 4px; }
+  #charPreview svg { width:120px; height:170px; background:radial-gradient(circle at 50% 40%, rgba(255,255,255,0.12), rgba(0,0,0,0.25)); border-radius:14px; }
+  /* Phase 16: quick chat + reactions */
+  #chatBtn, #reactBtn { position:fixed; right:22px; bottom:220px; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; z-index:40; cursor:pointer; }
+  #reactBtn { bottom:280px; }
+  #chatPanel, #reactPanel { display:none; position:fixed; right:20px; bottom:220px; z-index:45; flex-direction:column; gap:6px; max-height:60vh; overflow-y:auto; padding:8px; border-radius:12px; }
+  #chatPanel.open, #reactPanel.open { display:flex; }
+  .qcItem, .rxItem { padding:8px 14px; border-radius:8px; border:1px solid var(--bb-line); color:#fff; cursor:pointer; white-space:nowrap; font-size:14px; min-height:36px; display:flex; align-items:center; }
+  .rxItem { font-size:22px; justify-content:center; min-width:44px; }
+  body.spectating #chatBtn, body.spectating #reactBtn { display:none !important; }
+  /* Phase 6: Emote wheel */
+  #emoteWheel { display:none; position:fixed; inset:0; z-index:46; background:rgba(0,0,0,0.45); pointer-events:auto; }
+  #emoteWheel.open { display:block; animation:sfade .15s ease; }
+  #emoteWheelHint { position:absolute; bottom:24px; width:100%; text-align:center; font-size:12px; opacity:.7; }
+  .ewItem { position:absolute; width:64px; height:64px; margin:-32px 0 0 -32px; border-radius:50%; border:2px solid rgba(255,255,255,0.35); background:rgba(20,20,30,0.85); color:#fff; font-size:28px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; user-select:none; transition:transform .12s, background .12s; }
+  .ewItem small { font-size:8px; line-height:1; margin-top:2px; opacity:.8; max-width:60px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ewItem.hot { transform:scale(1.2); background:#ff5cff; border-color:#fff; }
+  .ewItem.cooling { opacity:.4; }
+  @media (max-width:700px) { .ewItem { width:58px; height:58px; margin:-29px 0 0 -29px; } }
+  /* Phase 5: Damage numbers */
+  #dmgLayer { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:19; }
+  .dmgNum { position:absolute; left:0; top:0; font-weight:900; font-size:22px; color:#fff; text-shadow:0 0 4px #000, 0 2px 0 #000; will-change:transform,opacity; white-space:nowrap; }
+  .dmgNum.crit { color:#ff3b3b; font-size:32px; text-shadow:0 0 8px #ff9a3b, 0 2px 0 #000; }
+  @media (max-width:700px) { .dmgNum { font-size:18px; } .dmgNum.crit { font-size:26px; } }
+  /* Phase 4: Hit marker (server-confirmed only) */
+  #hitMarker { position:absolute; top:50%; left:50%; width:0; height:0; pointer-events:none; opacity:0; z-index:20; }
+  #hitMarker i { position:absolute; width:10px; height:2px; background:#fff; box-shadow:0 0 4px #000; }
+  #hitMarker i:nth-child(1) { transform:translate(-16px,-16px) rotate(45deg); }
+  #hitMarker i:nth-child(2) { transform:translate(6px,-16px) rotate(-45deg); }
+  #hitMarker i:nth-child(3) { transform:translate(-16px,14px) rotate(-45deg); }
+  #hitMarker i:nth-child(4) { transform:translate(6px,14px) rotate(45deg); }
+  #hitMarker.crit i { background:#ff3b3b; width:14px; height:3px; }
+  #hitMarker.kill i { background:#ffd23b; }
+  #hitMarker.show { animation:hmPop .28s ease-out forwards; }
+  #hitMarker.show.crit { animation:hmPopCrit .4s ease-out forwards; }
+  @keyframes hmPop { 0% { opacity:1; transform:scale(.6); } 40% { opacity:1; transform:scale(1.1); } 100% { opacity:0; transform:scale(1.3); } }
+  @keyframes hmPopCrit { 0% { opacity:1; transform:scale(.5); } 35% { opacity:1; transform:scale(1.5); } 100% { opacity:0; transform:scale(1.8); } }
+  @keyframes screenShake { 0%,100% { transform:translate(0,0); } 25% { transform:translate(-3px,2px); } 50% { transform:translate(3px,-2px); } 75% { transform:translate(-2px,-1px); } }
+  canvas.shake { animation:screenShake .18s linear; }
+  /* Phase 3: Settings panel */
+  .settingsCard { max-height:85vh; overflow-y:auto; }
+  .settingsTabs { display:flex; gap:6px; margin:10px 0; flex-wrap:wrap; }
+  .stab { flex:1; min-width:70px; padding:10px 6px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); background:rgba(255,255,255,0.06); color:#fff; font-weight:700; font-size:12px; cursor:pointer; transition:background .2s, transform .1s; }
+  .stab.active { background:#ff5cff; color:#000; border-color:#ff5cff; }
+  .spanel { display:none; animation:sfade .25s ease; }
+  .spanel.active { display:block; }
+  @keyframes sfade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  .srow { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.08); font-size:14px; }
+  .srow input[type=range] { flex:1; max-width:150px; min-height:28px; }
+  .sval { min-width:34px; text-align:right; font-size:12px; opacity:.8; }
+  .tgl { min-width:64px; min-height:40px; border-radius:20px; border:none; font-weight:800; font-size:12px; cursor:pointer; background:#555; color:#fff; transition:background .2s; }
+  .tgl.on { background:#3ddc84; color:#000; }
+  .seg { display:flex; gap:4px; }
+  .seg button { min-height:40px; padding:0 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.25); background:rgba(255,255,255,0.06); color:#fff; font-size:12px; font-weight:700; cursor:pointer; }
+  .seg button.on { background:#ff5cff; color:#000; border-color:#ff5cff; }
+  /* Phase 1: Spectator Mode */
+  #spectateOverlay {
+    display:none; position:fixed; inset:0; z-index:44; pointer-events:none;
+    background:radial-gradient(circle at 50% 40%, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
+    flex-direction:column; align-items:center; justify-content:flex-start;
+  }
+  #spectateOverlay.active { display:flex; }
+  #spectateLabel {
+    margin-top:34px; font-size:14px; letter-spacing:4px; color:#ff5c5c; font-weight:800;
+    background:rgba(0,0,0,0.4); padding:6px 18px; border-radius:20px; border:1px solid rgba(255,92,92,0.5);
+  }
+  #spectateTargetName { margin-top:10px; font-size:26px; font-weight:900; color:#fff; text-shadow:0 0 10px #000; text-align:center; padding:0 20px; }
+  #spectateRespawnHint { margin-top:6px; font-size:13px; color:rgba(255,255,255,0.75); }
+  #spectateControls { position:absolute; bottom:120px; left:0; right:0; display:flex; justify-content:center; gap:18px; pointer-events:auto; }
+  .spectateBtn {
+    background:rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.4); color:#fff; font-weight:800;
+    font-size:14px; padding:14px 22px; border-radius:10px; cursor:pointer; user-select:none; transition:transform 0.1s, background 0.15s;
+  }
+  .spectateBtn:active { transform:scale(0.94); background:rgba(255,255,255,0.28); }
+  @media (max-width: 700px) {
+    #spectateControls { bottom:150px; gap:14px; }
+    .spectateBtn { padding:16px 20px; font-size:15px; }
+    #spectateTargetName { font-size:22px; }
+  }
+  /* =====================================================================
+     Phase 11 — unified design language (tokens + shared components + HUD grid)
+     Rule: geometry uses literal px/vw so tests/uilayout.js can verify the
+     layout from this stylesheet; variables are used for colour/motion only.
+     ===================================================================== */
+  /* Phase 15: room-first connection UX */
+  .connBadge { display:none; font-size:12px; font-weight:700; text-align:center; padding:6px 0; border-radius:8px; margin-bottom:8px; }
+  .connBadge.show { display:block; }
+  .connBadge.connecting, .connBadge.reconnecting { background:rgba(255,204,51,0.18); color:var(--bb-warn); }
+  .connBadge.lost, .connBadge.closed { background:rgba(255,92,92,0.18); color:var(--bb-bad); }
+  .connBadge.connected { background:rgba(61,220,132,0.18); color:var(--bb-ok); }
+  .advToggle { font-size:12px; opacity:.7; text-align:center; margin:6px 0; cursor:pointer; text-decoration:underline; }
+
+  /* Phase 21: mobile virtual joystick */
+  #moveJoystick {
+    display:none; position:fixed; left:26px; bottom:26px; width:120px; height:120px; border-radius:50%;
+    background:rgba(255,255,255,0.08); border:2px solid rgba(255,255,255,0.25); z-index:38; touch-action:none;
+  }
+  #moveJoystick.active { display:block; }
+  #moveJoystickKnob { position:absolute; left:50%; top:50%; width:52px; height:52px; margin:-26px 0 0 -26px; border-radius:50%; background:rgba(255,255,255,0.35); border:2px solid rgba(255,255,255,0.6); }
+  body.spectating #moveJoystick { display:none !important; }
+
+  :root {
+    --bb-accent:#a13ff5; --bb-accent-2:#ff5cff; --bb-ok:#3ddc84; --bb-warn:#ffcc33; --bb-bad:#ff5c5c; --bb-gold:#ffd23b;
+    --bb-glass:rgba(20,8,35,0.62); --bb-glass-strong:rgba(20,8,35,0.86); --bb-line:rgba(255,255,255,0.16);
+    --bb-ease:cubic-bezier(.2,.8,.2,1); --bb-shadow:0 4px 16px rgba(0,0,0,0.4);
+  }
+  /* shared "glass chip" — every persistent HUD readout looks the same */
+  #scoreboard, #pingBadge, #killfeed div, #spectateLabel, .stab, .seg button, .spectateBtn {
+    background:var(--bb-glass); border:1px solid var(--bb-line); box-shadow:var(--bb-shadow);
+    -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  }
+  #scoreboard, #pingBadge, #killfeed div { border-radius:10px; color:#fff; text-shadow:none; box-sizing:border-box; }
+  /* shared round action buttons (dash / emote / interact) */
+  #dashBtn, #emoteBtn, #interactBtn {
+    border-width:2px; border-style:solid; box-shadow:var(--bb-shadow); -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation; transition:transform .12s var(--bb-ease), background .15s, opacity .15s;
+  }
+  #emoteBtn { background:var(--bb-glass); border-color:var(--bb-accent-2); }
+  #dashBtn:active, #emoteBtn:active, #interactBtn:active, .btn:active, .spectateBtn:active { transform:scale(.92); }
+  .stab.active, .seg button.on { background:var(--bb-accent-2); color:#000; border-color:var(--bb-accent-2); }
+  .tgl.on { background:var(--bb-ok); }
+
+  /* ---- HUD grid: 12px gutters, top-left status stack, top-right feed,
+          bottom-left vitals, bottom-right action column ---- */
+  #scoreboard { top:12px; left:12px; width:150px; height:34px; padding:0 10px; font-size:12px; line-height:32px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #pingBadge  { top:54px; left:12px; transform:none; width:88px; height:26px; padding:0; font-size:12px; line-height:24px; text-align:center; white-space:nowrap; }
+  #killfeed   { top:12px; right:12px; width:260px; max-height:110px; overflow:hidden; font-size:13px; }
+  #killfeed div { padding:5px 10px; margin-bottom:4px; }
+  #health     { left:12px; bottom:12px; width:200px; height:60px; font-size:20px; }
+  #dashBtn    { right:12px; bottom:12px; width:72px; height:72px; }
+  #emoteBtn   { right:22px; bottom:96px; width:52px; height:52px; left:auto; }
+  #interactBtn{ right:20px; bottom:158px; width:56px; height:56px; }
+  #crosshair  { width:6px; height:6px; }
+  #healthbar, #staminabar { width:100%; }
+  #spectateOverlay { padding-top:130px; box-sizing:border-box; }
+  #spectateLabel { margin-top:0; }
+  #spectateControls { bottom:96px; }
+  @media (min-width:800px) { #spectateControls { bottom:24px; } }
+  @media (max-width:420px) {
+    #killfeed { width:44vw; }
+    #health { width:50vw; }
+  }
+  /* dead players are spectating: hide everything that only works alive */
+  body.spectating #dashBtn, body.spectating #emoteBtn, body.spectating #interactBtn,
+  body.spectating #crosshair, body.spectating #hitMarker { display:none !important; }
+
+  /* big centre text must never overflow a phone screen */
+  #chaosBanner, #punchtext, #trollmsg { font-size:clamp(20px,6.5vw,40px); max-width:92vw; box-sizing:border-box; line-height:1.15; overflow-wrap:anywhere; }
+  #spectateTargetName { max-width:92vw; box-sizing:border-box; overflow-wrap:anywhere; font-size:clamp(18px,6vw,26px); }
+
+  /* comfortable touch targets on touch screens */
+  @media (pointer:coarse) {
+    .btn.small, .copybtn { min-height:40px; }
+    .seg button, .tgl, .stab { min-height:44px; }
+    #dashBtn { width:80px; height:80px; }
+  }
+  /* landscape phones: keep the action column short so it clears the view */
+  @media (orientation:landscape) and (max-height:480px) {
+    #emoteBtn { bottom:92px; } #interactBtn { bottom:150px; }
+    #spectateOverlay { padding-top:100px; }
+    #killfeed { width:200px; }
+    .settingsCard { max-height:calc(100vh - 24px); }
+  }
+  .settingsCard { max-height:calc(100vh - 40px); max-height:calc(100dvh - 40px); }
+  /* notches / home indicator */
+  @supports (padding: env(safe-area-inset-top)) {
+    #hud { padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); box-sizing:border-box; }
+  }
+  /* respect the OS "reduce motion" setting */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    .stagger > * { opacity:1; }
+  }
+</style>
+</head>
+<body>
+
+<div id="menu">
+
+  <!-- EKRAN 1: ƏSAS MENYU (landscape, room-first; bütün ID-lər və handler-lər saxlanılıb) -->
+  <div class="screen active" id="screen-main">
+    <div class="card mm-card">
+      <header class="mm-head">
+        <div class="mm-brand">
+          <div class="logo">Badımcan Bəndələr 🍆</div>
+          <div class="tagline">Dostlar üçün gülməli FPS</div>
+        </div>
+        <div id="connStatus" class="connBadge"></div>
+      </header>
+      <div class="mm-body stagger">
+        <section class="mm-profile">
+          <div class="mm-title">PLAYER</div>
+          <div class="mm-avatar" aria-hidden="true">🧑</div>
+          <label for="nameInput">Adın</label>
+          <input id="nameInput" maxlength="16" placeholder="Bəndə adı" value="Bəndə">
+          <div class="advToggle" id="advToggle">⚙️ Fərqli server ünvanı</div>
+          <div id="advServerBox" style="display:none;">
+            <label>Server ünvanı</label>
+            <input id="serverInput" placeholder="məs: 192.168.1.5:3000">
+          </div>
+        </section>
+        <section class="mm-actions">
+          <button class="btn mm-play" id="btnPlay">▶ OYUNA BAŞLA</button>
+          <div class="mm-row2">
+            <button class="btn secondary mm-tile" id="btnGoCreate">➕ CREATE ROOM</button>
+            <button class="btn secondary mm-tile" id="btnGoJoin">🔑 JOIN ROOM</button>
+          </div>
+          <div class="mm-row3">
+            <button class="btn secondary mm-nav" id="btnGoCharacter">🧑‍🎤 CHARACTER</button>
+            <button class="btn secondary mm-nav" id="btnGoCosmetics">🎨 EFFECTS</button>
+            <button class="btn secondary mm-nav" id="btnGoSettings">⚙️ SETTINGS</button>
+          </div>
+          <div class="errortext" id="mainError"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- EKRAN 2: ROOM YARAT -->
+  <div class="screen" id="screen-create">
+    <div class="card stagger cr-card">
+      <div class="logo" style="font-size:22px;">Room Yarat</div>
+      <div class="cr-grid">
+        <div><label for="modeSelect">Rejim</label>
+          <select id="modeSelect">
+            <option value="ffa">Hamı hamıya (FFA)</option>
+            <option value="team">Komanda-komandaya</option>
+            <option value="zombie">Zombi rejimi</option>
+          </select></div>
+        <div><label for="mapSelect">Xəritə</label>
+          <select id="mapSelect">
+            <option value="purple">Bənövşəyi Arena</option>
+            <option value="forest">Meşə</option>
+            <option value="house">Ev / Mebel</option>
+          </select></div>
+        <div><label for="maxPlayersSelect">Maksimum oyunçu</label>
+          <select id="maxPlayersSelect">
+            <option value="2">2</option><option value="4">4</option>
+            <option value="6">6</option><option value="8" selected>8</option>
+            <option value="12">12</option>
+          </select></div>
+        <div><label for="roundTimeSelect">Round vaxtı</label>
+          <select id="roundTimeSelect">
+            <option value="120">2 dəq</option><option value="300" selected>5 dəq</option>
+            <option value="600">10 dəq</option>
+          </select></div>
+        <div><label for="scoreLimitSelect">Score limit</label>
+          <select id="scoreLimitSelect">
+            <option value="10">10</option><option value="20">20</option>
+            <option value="30" selected>30</option><option value="50">50</option>
+          </select></div>
+        <div><label for="chaosSelect">Chaos</label>
+          <select id="chaosSelect"><option value="1" selected>ON</option><option value="0">OFF</option></select></div>
+        <div><label for="spectatorSelect">Spectator</label>
+          <select id="spectatorSelect"><option value="1" selected>ON</option><option value="0">OFF</option></select></div>
+        <div><label for="friendlyFireSelect">Friendly Fire</label>
+          <select id="friendlyFireSelect"><option value="1">ON</option><option value="0" selected>OFF</option></select></div>
+        <div><label for="randomEventsSelect">Random Events</label>
+          <select id="randomEventsSelect"><option value="1" selected>ON</option><option value="0">OFF</option></select></div>
+        <div><label for="randomWeaponsSelect">Random Weapons</label>
+          <select id="randomWeaponsSelect"><option value="1" selected>ON</option><option value="0">OFF</option></select></div>
+      </div>
+      <button class="btn" id="btnCreateRoom">Room Yarat</button>
+      <div class="errortext" id="createError"></div>
+      <div class="backlink" id="backFromCreate">← Geri</div>
+    </div>
+  </div>
+
+  <!-- EKRAN 3: ROOM-A QOŞUL -->
+  <div class="screen" id="screen-join">
+    <div class="card stagger jn-card">
+      <div class="logo" style="font-size:22px;">Room-a Qoşul</div>
+      <label>Room Code</label>
+      <input id="roomCodeInput" maxlength="6" placeholder="MƏS: ABC123" style="text-transform:uppercase; text-align:center; font-size:22px; letter-spacing:4px; font-weight:800;">
+      <button class="btn" id="btnJoinRoom">JOIN</button>
+      <div class="errortext" id="joinError"></div>
+      <div class="backlink" id="backFromJoin">← Geri</div>
+    </div>
+  </div>
+
+  <!-- EKRAN 4: ROOM LOBBY -->
+  <div class="screen" id="screen-lobby">
+    <div class="card lb-card">
+      <div class="lb-left">
+        <div class="roomcode-box">
+          <div class="roomcode-label">Room Code</div>
+          <div class="roomcode-value" id="lobbyRoomCode">------</div>
+          <button class="btn small copybtn" id="btnCopyCode">📋 Kodu kopyala</button>
+          <button class="btn small copybtn" id="btnInvite">📤 Dəvət et</button>
+        </div>
+        <div class="playercount" id="lobbyPlayerCount">0/0 oyunçu</div>
+        <div class="playerlist" id="lobbyPlayerList"></div>
+      </div>
+      <div class="lb-right">
+        <div class="teamswitch" id="lobbyTeamSwitch" style="display:none;">
+          <button class="team1" id="btnTeam1">🔴 Qırmızı</button>
+          <button class="team2" id="btnTeam2">🔵 Mavi</button>
+        </div>
+        <button class="btn" id="btnReady">HAZIRAM</button>
+        <button class="btn" id="btnStartGame" style="display:none;" disabled>START GAME</button>
+        <button class="btn danger secondary" id="btnLeaveRoom">LEAVE ROOM</button>
+        <div class="errortext" id="lobbyError"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EKRAN 5: DEATH EFFECTS (Cosmetics) -->
+  <div class="screen" id="screen-cosmetics">
+    <div class="card">
+      <div class="logo" style="font-size:22px;">Death Effects</div>
+      <div class="tagline">Öləndə görünəcək effekt</div>
+      <div id="cosmeticsList"></div>
+      <div class="backlink" id="backFromCosmetics">← Geri</div>
+    </div>
+  </div>
+
+  <!-- EKRAN: SETTINGS (Phase 3) -->
+  <div class="screen" id="screen-settings">
+    <div class="card settingsCard">
+      <div class="logo" style="font-size:22px;">Settings</div>
+      <div class="settingsTabs" id="settingsTabs">
+        <button class="stab active" data-tab="audio">AUDIO</button>
+        <button class="stab" data-tab="gameplay">GAMEPLAY</button>
+        <button class="stab" data-tab="graphics">GRAPHICS</button>
+        <button class="stab" data-tab="effects">EFFECTS</button>
+      </div>
+      <div class="spanel active" data-panel="audio">
+        <div class="srow"><span>Master Volume</span><input type="range" min="0" max="100" data-key="masterVolume"><b class="sval"></b></div>
+        <div class="srow"><span>Music Volume</span><input type="range" min="0" max="100" data-key="musicVolume"><b class="sval"></b></div>
+        <div class="srow"><span>SFX Volume</span><input type="range" min="0" max="100" data-key="sfxVolume"><b class="sval"></b></div>
+        <div class="srow"><span>Emote SFX</span><button class="tgl" data-key="emoteSfx"></button></div>
+      </div>
+      <div class="spanel" data-panel="gameplay">
+        <div class="srow"><span>Hit Marker</span><button class="tgl" data-key="hitMarker"></button></div>
+        <div class="srow"><span>Damage Numbers</span><button class="tgl" data-key="damageNumbers"></button></div>
+        <div class="srow"><span>Screen Shake</span><button class="tgl" data-key="screenShake"></button></div>
+        <div class="srow"><span>Ping Display</span><button class="tgl" data-key="pingDisplay"></button></div>
+      </div>
+      <div class="spanel" data-panel="graphics">
+        <div class="srow"><span>Quality</span><div class="seg" data-key="graphicsQuality"><button data-val="low">Low</button><button data-val="medium">Medium</button><button data-val="high">High</button></div></div>
+      </div>
+      <div class="spanel" data-panel="effects">
+        <div class="srow"><span>Death Effects</span><button class="tgl" data-key="deathEffects"></button></div>
+        <div class="srow"><span>Chaos Effects</span><button class="tgl" data-key="chaosEffects"></button></div>
+        <div class="srow"><span>Particle Quality</span><div class="seg" data-key="particleQuality"><button data-val="low">Low</button><button data-val="medium">Medium</button><button data-val="high">High</button></div></div>
+      </div>
+      <div class="backlink" id="backFromSettings">← Geri</div>
+    </div>
+  </div>
+
+  <!-- EKRAN 6: CHARACTER (fərdiləşdirmə) -->
+  <div class="screen" id="screen-character">
+    <div class="card" style="max-height:80vh; overflow-y:auto;">
+      <div class="logo" style="font-size:22px;">Character</div>
+      <div class="tagline">Skin, outfit, head, hair, rəng, aksesuar, nişan, titul, emote</div>
+      <div id="charPreview"></div>
+      <label>Skin</label>
+      <div id="charSkinList"></div>
+      <label>Outfit</label>
+      <div id="charOutfitList"></div>
+      <label>Head</label>
+      <div id="charHeadList"></div>
+      <label>Hair</label>
+      <div id="charHairList"></div>
+      <label>Rəng</label>
+      <div id="charColorList"></div>
+      <label>Aksesuar</label>
+      <div id="charAccessoryList"></div>
+      <label>Nişan (Badge)</label>
+      <div id="charBadgeList"></div>
+      <label>Titul</label>
+      <div id="charTitleList"></div>
+      <label>Emote (oyunda "G" düyməsi)</label>
+      <div id="charEmoteList"></div>
+      <div class="backlink" id="backFromCharacter">← Geri</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div id="lightning"></div>
+<div id="redflash"></div>
+<div id="punchtext">YOU GOT PUNCHED<br>BY LEBRON JAMES</div>
+
+<div id="pinkOverlay"></div>
+<div id="chaosBanner"></div>
+
+<div id="hud">
+  <div id="crosshair"></div>
+  <div id="moveJoystick"><div id="moveJoystickKnob"></div></div>
+  <div id="dmgLayer"></div>
+  <div id="hitMarker"><i></i><i></i><i></i><i></i></div>
+  <div id="health">
+    ❤️ <span id="healthNum">100</span>
+    <div id="healthbar"><div id="healthfill"></div></div>
+    <div id="staminabar"><div id="staminafill"></div></div>
+  </div>
+  <div id="slotBox">
+    <div class="slotBtn active" data-slot="gun">🔫<small>1</small></div>
+    <div class="slotBtn" data-slot="knife">🔪<small>2</small></div>
+    <div class="slotBtn" data-slot="bomb">💣<small>3</small><div class="slotCd" id="bombCd"></div></div>
+  </div>
+  <div id="dashBtn">DASH</div>
+  <div id="interactBtn">🔍<br>E</div>
+  <div id="emoteBtn">💬</div>
+  <div id="emoteWheel"><div id="emoteWheelHint">Release to cancel</div></div>
+  <div id="chatBtn">💬</div>
+  <div id="reactBtn">😀</div>
+  <div id="chatPanel"></div>
+  <div id="reactPanel"></div>
+  <div id="matchTimer">--:--</div>
+  <div id="bountyBadge"></div>
+  <div id="killfeed"></div>
+  <div id="scoreboard">Kills: <span id="killNum">0</span> | Deaths: <span id="deathNum">0</span></div>
+  <div id="pingBadge">PING -- ms</div>
+  <div id="trollmsg"></div>
+  <div id="spectateOverlay">
+    <div id="spectateLabel">SPECTATE</div>
+    <div id="spectateTargetName">—</div>
+    <div id="spectateRespawnHint"></div>
+    <div id="spectateControls">
+      <div id="spectatePrev" class="spectateBtn">◀ PREV</div>
+      <div id="spectateNext" class="spectateBtn">NEXT ▶</div>
+    </div>
+  </div>
+</div>
+
+<div id="matchEnd"><div id="matchEndCard">
+  <h2>MATCH COMPLETE</h2>
+  <div id="matchEndWinner"></div>
+  <table><thead><tr><th>Oyunçu</th><th>KILLS</th><th>DEATHS</th><th>SCORE</th></tr></thead><tbody id="matchEndRows"></tbody></table>
+  <div id="matchEndAwards"></div>
+  <button id="btnRematch">REMATCH</button><button id="btnMatchLeave">LEAVE</button>
+  <div id="matchEndWait" style="display:none;font-size:12px;opacity:.8">Host-un REMATCH etməsi gözlənilir…</div>
+</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/OBJLoader.js"></script>
+<script src="settings.js"></script>
+<script src="feedback.js"></script>
+<script src="animstate.js"></script>
+<script src="maplayouts.js"></script>
+<script src="hitbox.js"></script>
+<script src="wind.js"></script>
+<script src="weaponmat.js"></script>
+<script src="uvgen.js"></script>
+<script src="gfx.js"></script>
+<script>
+// ---------- SƏS EFEKTLƏRİ (sintez, meme-style) ----------
+const actx = new (window.AudioContext || window.webkitAudioContext)();
+function playTone(freqStart, freqEnd, duration, type='sine', gain=0.15) {
+  const volMul = (settings.masterVolume / 100) * (settings.sfxVolume / 100);
+  if (volMul <= 0) return; // fully muted — don't even schedule a node
+  const osc = actx.createOscillator();
+  const g = actx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freqStart, actx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(Math.max(freqEnd,1), actx.currentTime + duration);
+  g.gain.setValueAtTime(gain * volMul, actx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + duration);
+  osc.connect(g); g.connect(actx.destination);
+  osc.start(); osc.stop(actx.currentTime + duration);
+}
+function sfxShoot() { playTone(900, 200, 0.08, 'square', 0.08); }
+function sfxHit() { playTone(300, 100, 0.12, 'sawtooth', 0.15); }
+function sfxWomp() { playTone(400, 80, 0.6, 'sine', 0.2); setTimeout(()=>playTone(300,60,0.6,'sine',0.15), 120); }
+function sfxTroll() { playTone(200, 900, 0.4, 'triangle', 0.2); }
+
+// ---------- SETTINGS (localStorage, logic lives in settings.js) ----------
+function loadSettings() {
+  return window.BBSettings.parseSettingsJSON(localStorage.getItem('bb_settings'));
+}
+function saveSettings(s) {
+  try { localStorage.setItem('bb_settings', JSON.stringify(window.BBSettings.validateSettings(s))); } catch {}
+}
+let settings = loadSettings();
+updatePingBadge();
+
+// ---------- PING (Phase 2) ----------
+// Real client<->server round trip, not a fake/random number. The server
+// only echoes back {t, seq} plus its own clock — this client computes RTT
+// itself as performance.now() - t using its own monotonic clock.
+let pingSeq = 0;
+let currentPingMs = null;
+let pingIntervalHandle = null;
+const PING_INTERVAL_MS = 2000;
+
+function startPingLoop() {
+  if (pingIntervalHandle) return; // already running
+  sendPing();
+  pingIntervalHandle = setInterval(sendPing, PING_INTERVAL_MS);
+}
+function sendPing() {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  pingSeq++;
+  ws.send(JSON.stringify({ type: 'ping', t: performance.now(), seq: pingSeq }));
+}
+function handlePong(msg) {
+  // Ignore a stale reply to an older ping than the latest one we've since sent.
+  if (msg.seq !== pingSeq) return;
+  currentPingMs = Math.max(0, Math.round(performance.now() - msg.t));
+  updatePingBadge();
+}
+function updatePingBadge() {
+  const el = document.getElementById('pingBadge');
+  if (!el) return;
+  el.classList.toggle('hidden', !settings.pingDisplay);
+  if (currentPingMs === null) { el.textContent = 'PING -- ms'; return; }
+  el.textContent = `PING ${currentPingMs} ms`;
+  el.classList.remove('warn', 'bad');
+  if (currentPingMs >= 200) el.classList.add('bad');
+  else if (currentPingMs >= 100) el.classList.add('warn');
+}
+function setPingDisplayEnabled(enabled) {
+  settings.pingDisplay = !!enabled;
+  saveSettings(settings);
+  updatePingBadge();
+}
+
+// ---------- TOAST ----------
+function showToast(text, ms) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => t.classList.remove('show'), ms || 3000);
+}
+
+
+// ---------- MATCH HUD (server-authoritative: the client only DISPLAYS these) ----------
+let matchEndsAtLocal = 0;
+function fmtClock(ms) { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+setInterval(() => {
+  const el = document.getElementById('matchTimer'); if (!el) return;
+  el.textContent = matchEndsAtLocal ? fmtClock(matchEndsAtLocal - Date.now()) : '--:--';
+}, 250);
+function streakLabel(n) { return n === 2 ? 'DOUBLE KILL' : n === 3 ? 'TRIPLE KILL' : n + ' KILL STREAK'; }
+function hideMatchEnd() { document.getElementById('matchEnd').classList.remove('show'); }
+function showMatchEnd(msg) {
+  matchEndsAtLocal = 0;
+  const rows = document.getElementById('matchEndRows'); rows.textContent = '';
+  (Array.isArray(msg.players) ? msg.players : []).forEach((p) => {
+    const tr = document.createElement('tr');
+    [p.name, p.kills, p.deaths, p.score].forEach((v) => { const td = document.createElement('td'); td.textContent = String(v == null ? '' : v); tr.appendChild(td); }); // textContent only: names never hit innerHTML
+    rows.appendChild(tr);
+  });
+  document.getElementById('matchEndWinner').textContent = msg.winner ? ('🏆 ' + msg.winner.name) : '';
+  const aw = [];
+  if (msg.mostKills) aw.push('Most Kills: ' + msg.mostKills.name + ' (' + msg.mostKills.value + ')');
+  if (msg.bestStreak) aw.push('Best Streak: ' + msg.bestStreak.name + ' (' + msg.bestStreak.value + ')');
+  if (msg.mostDeaths) aw.push('Most Deaths: ' + msg.mostDeaths.name + ' (' + msg.mostDeaths.value + ')');
+  if (msg.chaoticPlayer) aw.push('CHAOTIC PLAYER: ' + msg.chaoticPlayer.name);
+  document.getElementById('matchEndAwards').textContent = aw.join(' • ');
+  const host = !!(room && room.hostToken === myId);
+  document.getElementById('btnRematch').style.display = host ? 'inline-block' : 'none';
+  document.getElementById('matchEndWait').style.display = host ? 'none' : 'block';
+  document.getElementById('matchEnd').classList.add('show');
+  if (document.pointerLockElement && document.exitPointerLock) document.exitPointerLock();
+}
+document.getElementById('btnRematch').addEventListener('click', () => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'rematch' })); });
+document.getElementById('btnMatchLeave').addEventListener('click', () => { try { ws.send(JSON.stringify({ type: 'leave_room' })); } catch (e) {} location.reload(); });
+
+// ---------- EKRAN KEÇİDLƏRİ ----------
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+document.getElementById('btnGoCreate').onclick = () => showScreen('screen-create');
+document.getElementById('btnGoJoin').onclick = () => showScreen('screen-join');
+document.getElementById('btnGoCosmetics').onclick = () => { renderCosmetics(); showScreen('screen-cosmetics'); };
+document.getElementById('btnGoCharacter').onclick = () => { renderCharacterScreen(); showScreen('screen-character'); };
+document.getElementById('backFromCreate').onclick = () => showScreen('screen-main');
+document.getElementById('backFromJoin').onclick = () => showScreen('screen-main');
+document.getElementById('backFromCosmetics').onclick = () => showScreen('screen-main');
+document.getElementById('backFromCharacter').onclick = () => showScreen('screen-main');
+document.getElementById('backFromSettings').onclick = () => showScreen('screen-main');
+document.getElementById('btnGoSettings').onclick = () => { renderSettingsPanel(); showScreen('screen-settings'); };
+
+// ---------- SETTINGS PANEL UI (Phase 3) ----------
+// Client-only rendering preferences. Nothing here is ever sent to the
+// server, so it cannot influence authoritative gameplay state.
+function renderSettingsPanel() {
+  const root = document.getElementById('screen-settings');
+  root.querySelectorAll('input[type=range][data-key]').forEach(inp => {
+    inp.value = settings[inp.dataset.key];
+    inp.nextElementSibling.textContent = inp.value;
+  });
+  root.querySelectorAll('.tgl[data-key]').forEach(b => {
+    const on = !!settings[b.dataset.key];
+    b.classList.toggle('on', on); b.textContent = on ? 'ON' : 'OFF';
+  });
+  root.querySelectorAll('.seg[data-key]').forEach(seg => {
+    seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.val === settings[seg.dataset.key]));
+  });
+}
+function applySettingChange(key, value) {
+  settings = { ...settings, [key]: value };
+  settings = window.BBSettings.validateSettings(settings);
+  saveSettings(settings);
+  if (key === 'pingDisplay') updatePingBadge();
+  if (key === 'graphicsQuality' && renderer && sunLight) applyGraphics(settings.graphicsQuality); // live change, atomic with rollback
+  renderSettingsPanel();
+}
+(function bindSettingsPanel() {
+  const root = document.getElementById('screen-settings');
+  root.querySelectorAll('.stab').forEach(t => t.onclick = () => {
+    root.querySelectorAll('.stab').forEach(x => x.classList.toggle('active', x === t));
+    root.querySelectorAll('.spanel').forEach(p => p.classList.toggle('active', p.dataset.panel === t.dataset.tab));
+  });
+  root.querySelectorAll('input[type=range][data-key]').forEach(inp =>
+    inp.addEventListener('input', () => applySettingChange(inp.dataset.key, Number(inp.value))));
+  root.querySelectorAll('.tgl[data-key]').forEach(b =>
+    b.onclick = () => applySettingChange(b.dataset.key, !settings[b.dataset.key]));
+  root.querySelectorAll('.seg[data-key]').forEach(seg =>
+    seg.querySelectorAll('button').forEach(b => b.onclick = () => applySettingChange(seg.dataset.key, b.dataset.val)));
+})();
+
+// ---------- TOKEN (cihaz/brauzer üçün daimi identifikator) ----------
+function getStoredToken() {
+  try { return localStorage.getItem('badimcan_token') || null; } catch (e) { return null; }
+}
+function storeToken(t) {
+  try { localStorage.setItem('badimcan_token', t); } catch (e) {}
+}
+
+// ---------- MENYU / QOŞULMA VƏZİYYƏTİ ----------
+const menu = document.getElementById('menu');
+const hud = document.getElementById('hud');
+let ws, myId /* = token */, myName, myMapChoice;
+let pendingAction = null; // {type:'quick'|'create'|'join', ...}
+let room = null; // client-side lobby state güzgüsü
+let unlockedEffects = {};
+
+// ---------- CONNECTION UX (Phase 15) ----------
+// Browser/mobile clients auto-connect to the page's own host (this server
+// serves the client via express.static, so location.host IS the game
+// server) — no manual address entry needed. "⚙️ Fərqli server ünvanı"
+// reveals the field for the rare LAN-host-elsewhere case.
+function defaultServerAddr() { return location.host; }
+function currentServerAddr() {
+  const box = document.getElementById('advServerBox');
+  if (box && box.style.display !== 'none') {
+    const v = document.getElementById('serverInput').value.trim();
+    if (v) return v;
+  }
+  return defaultServerAddr();
+}
+function setConnStatus(state, text) {
+  const el = document.getElementById('connStatus');
+  if (!el) return;
+  el.className = 'connBadge show ' + state;
+  el.textContent = text;
+  if (state === 'connected') setTimeout(() => { if (el.classList.contains('connected')) el.classList.remove('show'); }, 1500);
+}
+let reconnectAttempts = 0, reconnectTimer = null, lastAddr = null, intentionalClose = false;
+
+function ensureConnected(addr, onReady) {
+  lastAddr = addr;
+  if (ws && ws.readyState === WebSocket.OPEN) { onReady(); return; }
+  setConnStatus('connecting', 'CONNECTING…');
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${addr}`);
+  intentionalClose = false;
+  ws.onopen = () => {
+    reconnectAttempts = 0;
+    setConnStatus('connected', 'CONNECTED');
+    ws.send(JSON.stringify({ type: 'hello', token: getStoredToken() }));
+  };
+  ws._readyCb = onReady;
+  ws.onmessage = (ev) => handleMessage(JSON.parse(ev.data));
+  ws.onclose = () => {
+    if (intentionalClose) return;
+    if (gameStarted) {
+      setConnStatus('lost', 'CONNECTION LOST');
+      attemptReconnect();
+    } else if (room) {
+      setConnStatus('lost', 'CONNECTION LOST');
+      attemptReconnect();
+    }
+  };
+  ws.onerror = () => { showErr('mainError', 'Serverə qoşulmaq alınmadı. Ünvanı yoxla.'); };
+}
+// Exponential backoff (1s,2s,4s... capped at 10s), up to 8 tries, then gives up
+// with a clear message instead of retrying forever.
+function attemptReconnect() {
+  if (reconnectTimer) return;
+  reconnectAttempts++;
+  if (reconnectAttempts > 8) { setConnStatus('closed', 'ROOM CLOSED — bağlantı bərpa olunmadı'); return; }
+  setConnStatus('reconnecting', `RECONNECTING… (${reconnectAttempts})`);
+  const delay = Math.min(10000, 1000 * 2 ** (reconnectAttempts - 1));
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null;
+    ensureConnected(lastAddr || defaultServerAddr(), () => {
+      setConnStatus('connecting', 'JOINING ROOM…');
+      ws.send(JSON.stringify({ type: 'hello', token: getStoredToken() })); // room_rejoined arrives if we had one
+    });
+  }, delay);
+}
+document.getElementById('advToggle').onclick = () => {
+  const box = document.getElementById('advServerBox');
+  const open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : 'block';
+  document.getElementById('advToggle').textContent = open ? '⚙️ Fərqli server ünvanı' : '⚙️ Standart ünvana qayıt';
+};
+document.getElementById('btnInvite').onclick = async () => {
+  if (!room) return;
+  const text = `Join my game!\n\nRoom Code: ${room.code}`;
+  if (navigator.share) { try { await navigator.share({ text }); return; } catch (e) { /* user cancelled or unsupported -> fall through */ } }
+  navigator.clipboard?.writeText(text).catch(() => {});
+  const btn = document.getElementById('btnInvite');
+  const orig = btn.textContent;
+  btn.textContent = '✅ Kopyalandı!';
+  setTimeout(() => { btn.textContent = orig; }, 1500);
+};
+
+function showErr(elId, text) {
+  const el = document.getElementById(elId);
+  el.textContent = text;
+  setTimeout(() => { if (el.textContent === text) el.textContent = ''; }, 4000);
+}
+
+document.getElementById('btnPlay').onclick = () => {
+  myName = document.getElementById('nameInput').value.trim() || 'Bəndə';
+  const addr = document.getElementById('serverInput').value.trim();
+  pendingAction = { type: 'quick' };
+  ensureConnected(addr, () => ws.send(JSON.stringify({ type: 'quick_play', token: myId, name: myName, cosmetics: equippedByType })));
+};
+
+document.getElementById('btnCreateRoom').onclick = () => {
+  myName = document.getElementById('nameInput').value.trim() || 'Bəndə';
+  const addr = currentServerAddr();
+  const opts = {
+    type: 'create_room', token: myId, name: myName,
+    mode: document.getElementById('modeSelect').value,
+    map: document.getElementById('mapSelect').value,
+    maxPlayers: parseInt(document.getElementById('maxPlayersSelect').value),
+    roundTimeSec: parseInt(document.getElementById('roundTimeSelect').value),
+    scoreLimit: parseInt(document.getElementById('scoreLimitSelect').value),
+    chaosEnabled: document.getElementById('chaosSelect').value === '1',
+    spectatorEnabled: document.getElementById('spectatorSelect').value === '1',
+    friendlyFire: document.getElementById('friendlyFireSelect').value === '1',
+    randomEvents: document.getElementById('randomEventsSelect').value === '1',
+    randomWeapons: document.getElementById('randomWeaponsSelect').value === '1',
+    cosmetics: equippedByType,
+  };
+  ensureConnected(addr, () => ws.send(JSON.stringify(opts)));
+};
+
+document.getElementById('btnJoinRoom').onclick = () => {
+  myName = document.getElementById('nameInput').value.trim() || 'Bəndə';
+  const addr = currentServerAddr();
+  const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+  if (code.length < 4) { showErr('joinError', 'Room Code-u düzgün yaz.'); return; }
+  ensureConnected(addr, () => ws.send(JSON.stringify({ type: 'join_room', token: myId, name: myName, roomCode: code, cosmetics: equippedByType })));
+};
+
+document.getElementById('btnReady').onclick = () => {
+  const iAmReady = room && room.players.find(p => p.token === myId)?.ready;
+  ws.send(JSON.stringify({ type: iAmReady ? 'player_unready' : 'player_ready', token: myId }));
+};
+document.getElementById('btnStartGame').onclick = () => {
+  ws.send(JSON.stringify({ type: 'start_game', token: myId }));
+};
+document.getElementById('btnLeaveRoom').onclick = () => {
+  intentionalClose = true;
+  if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+  ws.send(JSON.stringify({ type: 'leave_room', token: myId }));
+  room = null;
+  showScreen('screen-main');
+};
+document.getElementById('btnTeam1').onclick = () => ws.send(JSON.stringify({ type: 'set_team', token: myId, team: 1 }));
+document.getElementById('btnTeam2').onclick = () => ws.send(JSON.stringify({ type: 'set_team', token: myId, team: 2 }));
+document.getElementById('btnCopyCode').onclick = (e) => {
+  if (!room) return;
+  navigator.clipboard?.writeText(room.code).catch(() => {});
+  const btn = e.target;
+  btn.textContent = '✅ Kopyalandı!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = '📋 Kodu kopyala'; btn.classList.remove('copied'); }, 1500);
+};
+
+function renderLobby() {
+  if (!room) return;
+  document.getElementById('lobbyRoomCode').textContent = room.code;
+  document.getElementById('lobbyPlayerCount').textContent = `${room.players.length}/${room.maxPlayers} oyunçu`;
+  document.getElementById('lobbyTeamSwitch').style.display = room.mode === 'team' ? 'flex' : 'none';
+
+  const me = room.players.find(p => p.token === myId);
+  if (me) {
+    document.getElementById('btnTeam1').classList.toggle('active', me.team === 1);
+    document.getElementById('btnTeam2').classList.toggle('active', me.team === 2);
+    document.getElementById('btnReady').textContent = me.ready ? '✅ HAZIRAM (ləğv et)' : 'HAZIRAM';
+  }
+
+  const list = document.getElementById('lobbyPlayerList');
+  list.innerHTML = '';
+  room.players.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'playercard';
+    card.innerHTML = `
+      <div class="avatar">${escHtml((p.name || '?').slice(0,1).toUpperCase())}</div>
+      <div class="pname">${escHtml(p.name)}${p.token === myId ? ' <span class="you">(sən)</span>' : ''}${!p.connected ? '<span class="discbadge">bağlantı kəsildi</span>' : ''}</div>
+      ${p.isHost ? '<span class="hostcrown" title="Host">👑</span>' : ''}
+      <div class="readydot ${p.ready ? 'ready' : ''}"></div>
+      <div class="readytext">${p.ready ? 'Hazır' : 'Gözləyir'}</div>
+    `;
+    list.appendChild(card);
+  });
+
+  const iAmHost = room.hostToken === myId;
+  const startBtn = document.getElementById('btnStartGame');
+  startBtn.style.display = iAmHost ? 'block' : 'none';
+  const others = room.players.filter(p => p.token !== myId);
+  startBtn.disabled = !(others.length > 0 && others.every(p => p.ready));
+}
+
+let cosmeticCatalog = {}; // serverdən hello_ok ilə gələn tam siyahı
+let equippedByType = { deathEffect: 'default', color: 'colorDefault', accessory: 'accessoryNone', badge: 'badgeNone', title: 'titleNone', emote: 'emoteWave', skin: 'skinDefault', outfit: 'outfitNone', head: 'headDefault', hair: 'hairNone' };
+
+// Names are stripped of < > by the server, but the lobby card is built with innerHTML, so escape anyway
+// (defense in depth: the server-side strip must not be the ONLY barrier against markup injection).
+function escHtml(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+
+function renderCosmeticSection(containerId, type) {
+  const list = document.getElementById(containerId);
+  if (!list) return;
+  const items = Object.values(cosmeticCatalog).filter(c => c.type === type);
+  list.innerHTML = '';
+  items.forEach(fx => {
+    const unlocked = !fx.unlockRequirement || !!unlockedEffects[fx.id];
+    const equipped = equippedByType[type] === fx.id;
+    const card = document.createElement('div');
+    card.className = 'cosmeticcard' + (unlocked ? '' : ' locked') + (equipped ? ' equipped' : '');
+    card.innerHTML = `
+      <div class="cosmeticpreview">${unlocked ? '✨' : '🔒'}</div>
+      <div class="cosmeticinfo">
+        <div class="cosmeticname">${unlocked ? (fx.name || '(adsız)') : '???'}</div>
+        <div class="cosmeticstatus">${unlocked ? (equipped ? 'TAXILIB ✅' : 'UNLOCKED') : ('Unlock: ' + fx.unlockRequirement)}</div>
+      </div>
+      ${unlocked ? `<button class="btn small" ${equipped ? 'disabled' : ''}>${equipped ? 'Taxılıb' : 'EQUIP'}</button>` : ''}
+    `;
+    if (unlocked) {
+      card.querySelector('button').onclick = () => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'equip_cosmetic', cosmeticId: fx.id }));
+        } else {
+          equippedByType[type] = fx.id;
+          renderCosmeticSection(containerId, type);
+        }
+      };
+    }
+    list.appendChild(card);
+  });
+}
+
+function renderCosmetics() {
+  renderCosmeticSection('cosmeticsList', 'deathEffect');
+}
+function renderCharacterScreen() {
+  renderCosmeticSection('charSkinList', 'skin');
+  renderCosmeticSection('charOutfitList', 'outfit');
+  renderCosmeticSection('charHeadList', 'head');
+  renderCosmeticSection('charHairList', 'hair');
+  renderCharacterPreview();
+  renderCosmeticSection('charColorList', 'color');
+  renderCosmeticSection('charAccessoryList', 'accessory');
+  renderCosmeticSection('charBadgeList', 'badge');
+  renderCosmeticSection('charTitleList', 'title');
+  renderCosmeticSection('charEmoteList', 'emote');
+}
+
+// ---------- OYUN VƏZİYYƏTİ ----------
+const remotePlayers = {}; // token -> {mesh, targetPos, targetRy, team}
+let health = 100, kills = 0, deaths = 0;
+let trollUntil = 0;
+// ---------- SPECTATOR MODE (Phase 1) ----------
+// isDead/spectateTargetId are UI-only mirrors of server-authoritative state:
+// this client never decides who is alive or who can be spectated — it only
+// ever sends 'spectate_request' with a direction and renders whatever the
+// server answers with in 'spectate_state'.
+let isDead = false;
+let spectateTargetId = null;
+let spectateTargetName = null;
+let spectateWaiting = false;
+
+
+// ---------- HIT MARKER (Phase 4) ----------
+// Driven ONLY by the server's 'hit_confirm'. onShoot's local raycast never
+// touches this — a client that fakes a hit gets no marker.
+function showHitMarker(crit, killed) {
+  if (!settings.hitMarker) return;
+  const el = document.getElementById('hitMarker');
+  el.classList.remove('show', 'crit', 'kill');
+  void el.offsetWidth; // restart CSS animation
+  if (crit) el.classList.add('crit');
+  if (killed) el.classList.add('kill');
+  el.classList.add('show');
+  if (settings.screenShake && (crit || killed)) {
+    const c = renderer.domElement;
+    c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
+  }
+}
+function handleHitConfirm(msg) {
+  showHitMarker(!!msg.crit, !!msg.killed);
+  spawnDamageNumber(msg);
+}
+
+// ---------- DAMAGE NUMBERS (Phase 5) ----------
+// Spawned only from the server's 'hit_confirm' (damage value + target
+// position are both server-supplied). Numbers are anchored to that world
+// position and projected to screen each frame, rising and fading.
+const dmgNums = []; // oldest first: {el, pos:THREE.Vector3, born, crit}
+const DMG_LIFE_MS = 900;
+let dmgLoopRunning = false;
+const IS_TOUCH_DEVICE = (navigator.maxTouchPoints || 0) > 0 || 'ontouchstart' in window;
+
+function spawnDamageNumber(msg) {
+  if (!settings.damageNumbers) return;
+  const text = window.BBFeedback.formatDamage(msg.damage, msg.crit);
+  if (!text || ![msg.x, msg.y, msg.z].every(Number.isFinite)) return;
+  const max = window.BBFeedback.maxDamageNumbers(settings.graphicsQuality, IS_TOUCH_DEVICE);
+  for (let n = window.BBFeedback.overflowCount(dmgNums.length, max); n > 0; n--) {
+    const old = dmgNums.shift(); old.el.remove();
+  }
+  const el = document.createElement('div');
+  el.className = 'dmgNum' + (msg.crit ? ' crit' : '');
+  el.textContent = text; // textContent, never innerHTML
+  document.getElementById('dmgLayer').appendChild(el);
+  // small horizontal jitter so consecutive hits don't stack exactly
+  dmgNums.push({ el, pos: new THREE.Vector3(msg.x + (Math.random() - 0.5) * 0.5, msg.y + 0.8, msg.z), born: performance.now(), crit: !!msg.crit });
+  if (!dmgLoopRunning) { dmgLoopRunning = true; requestAnimationFrame(updateDamageNumbers); }
+}
+
+function updateDamageNumbers(now) {
+  const w = window.innerWidth, h = window.innerHeight;
+  for (let i = dmgNums.length - 1; i >= 0; i--) {
+    const d = dmgNums[i];
+    const t = (now - d.born) / DMG_LIFE_MS;
+    if (t >= 1) { d.el.remove(); dmgNums.splice(i, 1); continue; }
+    const p = d.pos.clone(); p.y += t * 1.4; // rise in world space
+    p.project(camera);
+    if (p.z > 1) { d.el.style.opacity = '0'; continue; } // behind camera
+    const scale = d.crit ? 1 + Math.sin(Math.min(1, t * 3) * Math.PI) * 0.5 : 1; // crit pop
+    d.el.style.opacity = String(1 - t * t);
+    d.el.style.transform = `translate(${(p.x * 0.5 + 0.5) * w}px, ${(-p.y * 0.5 + 0.5) * h}px) translate(-50%,-50%) scale(${scale})`;
+  }
+  if (dmgNums.length) requestAnimationFrame(updateDamageNumbers); else dmgLoopRunning = false;
+}
+
+// ---------- EMOTE WHEEL (Phase 6) ----------
+// PC: hold V to open, move mouse to pick, release V to play (Esc cancels).
+// Mobile: tap the 💬 button to open, tap an emote. 'G' still plays the
+// equipped emote exactly as before. The server validates/cooldowns everything.
+const activeEmoteAnims = {}; // token -> {until, id}
+let emoteWheelOpen = false, emoteWheelHot = null;
+
+function wheelEmotes() {
+  return Object.values(cosmeticCatalog).filter(c => c.type === 'emote' && c.icon && (!c.unlockRequirement || unlockedEffects[c.id]));
+}
+function openEmoteWheel() {
+  if (emoteWheelOpen || isDead || stunned) return;
+  const list = wheelEmotes(); if (!list.length) return;
+  const wheel = document.getElementById('emoteWheel');
+  wheel.querySelectorAll('.ewItem').forEach(n => n.remove());
+  const geo = window.BBFeedback.wheelGeometry(window.innerWidth, window.innerHeight, list.length);
+  const R = geo.R;
+  const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+  list.forEach((c, i) => {
+    const a = (i / list.length) * Math.PI * 2 - Math.PI / 2;
+    const el = document.createElement('div');
+    el.className = 'ewItem'; el.dataset.id = c.id;
+    el.style.left = (cx + Math.cos(a) * R) + 'px'; el.style.top = (cy + Math.sin(a) * R) + 'px';
+    el.style.width = el.style.height = geo.size + 'px';
+    el.style.margin = (-geo.size / 2) + 'px 0 0 ' + (-geo.size / 2) + 'px';
+    el.style.fontSize = Math.round(geo.size * 0.45) + 'px';
+    el.innerHTML = '<span></span><small></small>';
+    el.firstChild.textContent = c.icon;
+    el.lastChild.textContent = c.name.replace(/^\S+\s/, '');
+    el.addEventListener('click', () => { playEmoteFromWheel(c.id); });
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); playEmoteFromWheel(c.id); }, { passive: false });
+    wheel.appendChild(el);
+  });
+  wheel.classList.add('open'); emoteWheelOpen = true; emoteWheelHot = null;
+  if (document.pointerLockElement === renderer.domElement) document.exitPointerLock();
+}
+function closeEmoteWheel() {
+  emoteWheelOpen = false; emoteWheelHot = null;
+  document.getElementById('emoteWheel').classList.remove('open');
+}
+function playEmoteFromWheel(id) {
+  closeEmoteWheel();
+  if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'emote_trigger', emoteId: id }));
+}
+document.addEventListener('mousemove', (e) => {
+  if (!emoteWheelOpen) return;
+  let best = null, bestD = 60 * 60;
+  document.querySelectorAll('#emoteWheel .ewItem').forEach(n => {
+    const r = n.getBoundingClientRect();
+    const d = (e.clientX - (r.left + r.width / 2)) ** 2 + (e.clientY - (r.top + r.height / 2)) ** 2;
+    const hot = d < bestD; if (hot) { bestD = d; best = n; }
+  });
+  document.querySelectorAll('#emoteWheel .ewItem').forEach(n => n.classList.toggle('hot', n === best));
+  emoteWheelHot = best ? best.dataset.id : null;
+});
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyV' && !e.repeat) openEmoteWheel();
+  if (e.code === 'Escape' && emoteWheelOpen) closeEmoteWheel();
+});
+document.addEventListener('keyup', (e) => {
+  if (e.code === 'KeyV' && emoteWheelOpen) { const id = emoteWheelHot; closeEmoteWheel(); if (id) playEmoteFromWheel(id); }
+});
+document.getElementById('emoteWheel').addEventListener('click', (e) => { if (e.target.id === 'emoteWheel') closeEmoteWheel(); });
+
+// Original synthesized sounds (no sampled/copyrighted audio). Respect
+// Master/SFX volume via playTone and the Emote SFX toggle.
+const EMOTE_SFX = {
+  boing:  () => playTone(200, 600, 0.25, 'sine', 0.2),
+  dun:    () => { playTone(140, 90, 0.3, 'square', 0.15); setTimeout(() => playTone(110, 70, 0.4, 'square', 0.15), 220); },
+  slap:   () => playTone(500, 80, 0.12, 'sawtooth', 0.2),
+  huh:    () => { playTone(300, 450, 0.15, 'triangle', 0.2); setTimeout(() => playTone(450, 500, 0.2, 'triangle', 0.2), 160); },
+  giggle: () => [0, 110, 220, 330].forEach(t => setTimeout(() => playTone(700, 900, 0.08, 'sine', 0.15), t)),
+  fanfare:() => [0, 130, 260].forEach((t, i) => setTimeout(() => playTone(400 + i * 150, 420 + i * 150, 0.18, 'square', 0.12), t)),
+  blip:   () => playTone(880, 880, 0.08, 'square', 0.1),
+  roadroller: () => playJojoSfx(), // sample-based (user-supplied file, see README license table)
+  party:  () => [0, 90, 180, 270, 360].forEach((t, i) => setTimeout(() => playTone(500 + (i % 2) * 300, 700, 0.1, 'triangle', 0.15), t)),
+};
+function playEmoteSfx(name) {
+  if (!settings.emoteSfx || !EMOTE_SFX[name]) return;
+  try { EMOTE_SFX[name](); } catch (e) {}
+}
+
+// Server-driven only: animation runs from emote_used, ends on duration or emote_end.
+function startEmoteAnim(token, id, duration) {
+  activeEmoteAnims[token] = { id, until: performance.now() + duration };
+}
+function stopEmoteAnim(token) {
+  delete activeEmoteAnims[token];
+  const r = remotePlayers[token];
+  if (r) { r.mesh.rotation.z = 0; r.mesh.scale.y = r.baseScaleY || r.mesh.scale.y; }
+}
+// Called each frame: purely visual wobble on top of the mesh; never touches position.
+function updateEmoteAnims(now) {
+  for (const token in activeEmoteAnims) {
+    const a = activeEmoteAnims[token];
+    const r = remotePlayers[token];
+    if (now >= a.until || (token !== myId && !r)) { stopEmoteAnim(token); continue; }
+    if (!r) continue; // own emote: shown via sprite/bubble only (first-person)
+    const t = (a.until - now) / 1000;
+    r.mesh.rotation.z = Math.sin(t * 14) * (a.id === 'emoteGoofyDance' || a.id === 'emoteAbsurdParty' ? 0.35 : 0.12);
+  }
+}
+
+// ---------- CHARACTER COSMETICS RENDERING (Phase 7) ----------
+// The character is a capsule, so cosmetics are data-driven primitives read
+// from the registry's `visual` descriptors (sent in the public catalog).
+// A future real model can replace a part by giving the descriptor a
+// `model` path; this builder is the only place that would change.
+function cosmeticVisual(id) {
+  const c = id && cosmeticCatalog[id];
+  return (c && c.visual) || null;
+}
+const sharedTextures = {};
+function getSharedTexture(url) { // textures are shared between players and never disposed: a leaked 180 KB JPEG is cheaper than a freed-too-early one
+  if (!sharedTextures[url]) { sharedTextures[url] = new THREE.TextureLoader().load(url); sharedTextures[url].encoding = THREE.sRGBEncoding; }
+  return sharedTextures[url];
+}
+function buildCosmeticPart(v) {
+  if (!v || !v.shape) return null;
+  const col = new THREE.Color(v.color || '#ffffff');
+  const mat = new THREE.MeshStandardMaterial({ color: col });
+  if (v.emissive) { mat.emissive = new THREE.Color(v.emissive); mat.emissiveIntensity = 0.6; }
+  let obj = null;
+  if (v.shape === 'torus') {
+    obj = new THREE.Mesh(new THREE.TorusGeometry(v.radius || 0.4, v.tube || 0.05, 8, 20), mat);
+    obj.rotation.x = Math.PI / 2;
+  } else if (v.shape === 'sphere') {
+    obj = new THREE.Mesh(new THREE.SphereGeometry(v.radius || 0.3, 12, 10), mat);
+  } else if (v.shape === 'box') {
+    const sz = v.size || 0.5; obj = new THREE.Mesh(new THREE.BoxGeometry(sz, sz, sz), mat);
+  } else if (v.shape === 'model' && typeof v.model === 'string') {
+    // Model-based accessory: loaded asynchronously into a holder group (no second renderer/loader: the existing objLoader).
+    // The OBJ ships no MTL, so colours come from v.palette (keyed by usemtl name) with a 'default' fallback. Geometry is NOT cached/shared,
+    // so disposeObject3D() on the holder can never free another player's mesh.
+    const holder = new THREE.Group();
+    objLoader.load(v.model, (m) => {
+      let root = holder; while (root.parent) root = root.parent;
+      if (root !== scene) { disposeObject3D(m); return; } // the player/cosmetic was removed before the model arrived
+      const pal = v.palette || {};
+      const tex = v.texture ? getSharedTexture(v.texture) : null; // one shared texture per file (never disposed with a player: disposeObject3D frees geometry+material only)
+      m.traverse((ch) => {
+        if (!ch.isMesh) return;
+        const hex = pal[ch.material && ch.material.name] || pal.default || v.color || '#ffffff';
+        let hasUV = !!(ch.geometry && ch.geometry.attributes && ch.geometry.attributes.uv); // the texture only goes on meshes that really have UVs
+        if (tex && !hasUV && ch.geometry && ch.geometry.attributes && ch.geometry.attributes.position && !ch.geometry.index) { // GENERATED box-projection UV (public/uvgen.js), only for a textured mesh that ships none (the helmet)
+          const gen = BBUV.boxProjectUV(ch.geometry.attributes.position.array);
+          if (gen) { ch.geometry.setAttribute('uv', new THREE.BufferAttribute(gen.uv, 2)); hasUV = true; }
+        }
+        ch.material = new THREE.MeshStandardMaterial({ color: new THREE.Color(tex && hasUV ? '#ffffff' : hex), map: tex && hasUV ? tex : null, metalness: 0.5, roughness: 0.45 });
+        applyMetalEnv(ch.material, 0.6); // metalness 0.5 with no environment reads dark; the procedural env is per-material (never scene.environment) and absent on Low
+      });
+      if (v.rotX) m.rotation.x = v.rotX; // source-axis correction (e.g. Blender Z-up -> Y-up), applied BEFORE centring the pivot
+      m.updateMatrixWorld(true);
+      m.position.sub(new THREE.Box3().setFromObject(m).getCenter(new THREE.Vector3())); // centred pivot
+      holder.add(m);
+    }, undefined, () => {});
+    holder.scale.setScalar(v.scale || 1); holder.position.x = v.x || 0; holder.position.z = v.z || 0; holder.rotation.y = v.rotY || 0; // rotY turns the model to face the player's forward
+    obj = holder;
+  } else if (v.shape === 'spikes') {
+    obj = new THREE.Group();
+    const n = Math.max(3, Math.min(8, v.count || 5));
+    for (let i = 0; i < n; i++) {
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.3, 6), mat);
+      const a = (i / n) * Math.PI * 2;
+      cone.position.set(Math.cos(a) * 0.18, 0, Math.sin(a) * 0.18);
+      cone.rotation.z = -Math.cos(a) * 0.5; cone.rotation.x = Math.sin(a) * 0.5;
+      obj.add(cone);
+    }
+  }
+  if (obj) obj.position.y = v.y || 0;
+  return obj;
+}
+function disposeObject3D(o) {
+  // Geometry flagged sharedGeometry (see loadObjShared) is owned by the cache and is never freed here: one player leaving must not blank everyone else's model.
+  // A registered shared clone releases its reference instead; the cache frees the geometry only when the LAST reference is released.
+  o.traverse((c) => { releaseSharedObj(c); if (c.geometry && !(c.geometry.userData && c.geometry.userData.sharedGeometry)) c.geometry.dispose(); if (c.material) c.material.dispose(); });
+}
+// Shared OBJ cache: each file is fetched + parsed ONCE through the existing objLoader (no second loader); every consumer gets a cheap clone whose
+// geometry is the SAME BufferGeometry. Consumers must give their clone its own material (they all do) because materials are not shared.
+// Ownership: the cache owns the geometry; each registered clone root holds one reference (released by disposeObject3D). Clones that were made from a
+// registered clone with Object3D.clone() (thrown bombs) are NOT registered, never release, and rely on their prototype staying alive.
+const objCache = {};                 // url -> { url, root, refs, waiters }
+const sharedRoots = new WeakMap();   // registered clone root -> its cache entry (a WeakMap, so Object3D.clone/userData copies can never fake a registration)
+function cloneObjSharingGeometry(entry) {
+  const root = entry.root, src = [], dst = [], out = root.clone(true);
+  root.traverse((c) => { if (c.isMesh) src.push(c); }); out.traverse((c) => { if (c.isMesh) dst.push(c); });
+  for (let i = 0; i < dst.length; i++) dst[i].geometry = src[i].geometry; // explicit, so correctness does not depend on how Object3D.clone treats geometry
+  sharedRoots.set(out, entry); entry.refs++;
+  return out;
+}
+function releaseSharedObj(node) {
+  const e = sharedRoots.get(node); if (!e) return;
+  sharedRoots.delete(node); // a second dispose of the same clone must not release twice
+  if (--e.refs <= 0 && objCache[e.url] === e) { delete objCache[e.url]; e.root.traverse((c) => { if (c.isMesh && c.geometry) c.geometry.dispose(); }); }
+}
+function loadObjShared(url, onLoad, onError) {
+  const e = objCache[url];
+  if (e && e.root) { onLoad(cloneObjSharingGeometry(e)); return; }
+  if (e) { e.waiters.push({ onLoad, onError }); return; } // already loading: wait for that one request
+  const entry = objCache[url] = { url, root: null, refs: 0, waiters: [{ onLoad, onError }] };
+  objLoader.load(url, (obj) => {
+    obj.traverse((c) => { if (c.isMesh && c.geometry) { c.geometry.userData = c.geometry.userData || {}; c.geometry.userData.sharedGeometry = true; } });
+    entry.root = obj;
+    // Make every waiter's clone (taking its reference) BEFORE calling any consumer: a consumer that disposes immediately (stale load) must not free the cache under the others.
+    const ws = entry.waiters.splice(0).map((w) => ({ w, clone: cloneObjSharingGeometry(entry) }));
+    for (const { w, clone } of ws) { try { w.onLoad(clone); } catch (err) { console.error('loadObjShared consumer failed', url, err); } }
+  }, undefined, (err) => { if (objCache[url] === entry) delete objCache[url]; for (const w of entry.waiters.splice(0)) if (w.onError) w.onError(err); });
+}
+
+function remoteBodyColor(id, p) {
+  // Gameplay state always wins over cosmetics: chaos tints, then team colour
+  // in team/zombie modes (so teams stay identifiable), cosmetic colour only in FFA.
+  if (pinkPopActive) return 0xff8fd6;
+  if (ogreOriginal[id]) return 0x2ecc40;
+  if (p.mode !== 'team' && p.mode !== 'zombie') {
+    const v = cosmeticVisual(p.color);
+    if (v && v.color) return new THREE.Color(v.color).getHex();
+  }
+  return teamColor(p.team, p.mode);
+}
+// Full-body model skins ('bodyModel'): one baked, vertex-coloured mesh that REPLACES the visible capsule. Only in FFA (team/zombie keep the team-coloured
+// capsule so teams stay identifiable). The model holder is a child of the capsule, so position/heading/bob/knockdown/ogre-scale all apply unchanged.
+const PLAYER_EYE_HEIGHT = 1.6; // matches camera.position.y; the model's feet are baked at y=0
+function tintBodyModel(id, r) {
+  if (!r || !r.bodyMat) return;
+  if (pinkPopActive) r.bodyMat.color.set(0xff8fd6); else if (ogreOriginal[id]) r.bodyMat.color.set(0x2ecc40); else r.bodyMat.color.set(0xffffff);
+}
+function applyBodyModel(id, r, p, sv) {
+  if (r.bodyModel) { r.mesh.remove(r.bodyModel); disposeObject3D(r.bodyModel); r.bodyModel = null; r.bodyMat = null; }
+  const use = !!(sv && sv.shape === 'bodyModel' && typeof sv.model === 'string' && p.mode !== 'team' && p.mode !== 'zombie');
+  r.mesh.material.visible = !use;
+  if (!use) return;
+  const holder = new THREE.Group(); holder.position.y = -PLAYER_EYE_HEIGHT; r.bodyModel = holder; r.mesh.add(holder);
+  loadObjShared(sv.model, (m) => {
+    if (r.bodyModel !== holder) { disposeObject3D(m); return; } // skin changed or the player left before the file arrived
+    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.15, roughness: 0.75 });
+    m.traverse((ch) => { if (ch.isMesh) ch.material = mat; });
+    r.bodyMat = mat; holder.add(m); markShadow(m, true, false); tintBodyModel(id, r);
+  }, () => { if (r.bodyModel === holder) r.mesh.material.visible = true; }); // load failed -> fall back to the capsule
+}
+function applyRemoteCosmetics(r, p, id) {
+  const sig = [p.skin, p.outfit, p.head, p.hair, p.accessory, p.mode].join('|'); // mode: body-model skins are FFA-only
+  if (r.cosmeticSig === sig) return; // rebuild only when something actually changed
+  r.cosmeticSig = sig;
+  if (r.cosmeticGroup) { r.mesh.remove(r.cosmeticGroup); disposeObject3D(r.cosmeticGroup); r.cosmeticGroup = null; }
+  const group = new THREE.Group();
+  for (const id of [p.outfit, p.head, p.hair, p.accessory]) {
+    const part = buildCosmeticPart(cosmeticVisual(id));
+    if (part) group.add(part);
+  }
+  r.mesh.add(group); r.cosmeticGroup = group;
+  const sv = cosmeticVisual(p.skin) || {};
+  const m = r.mesh.material;
+  m.metalness = sv.metalness !== undefined ? sv.metalness : 0.0;
+  m.roughness = sv.roughness !== undefined ? sv.roughness : 1.0;
+  m.emissive = new THREE.Color(sv.emissive || '#000000');
+  m.emissiveIntensity = sv.emissiveIntensity || 0;
+  applyBodyModel(id, r, p, sv);
+}
+function removeRemotePlayer(id) {
+  const r = remotePlayers[id]; if (!r) return;
+  scene.remove(r.mesh); disposeObject3D(r.mesh);
+  delete activeEmoteAnims[id]; delete remotePlayers[id];
+}
+
+// 2D SVG preview (no second WebGL context — cheap on mobile).
+function renderCharacterPreview() {
+  const box = document.getElementById('charPreview'); if (!box) return;
+  const e = equippedByType;
+  const col = (id, d) => { const v = cosmeticVisual(id); return (v && v.color) || d; };
+  const body = col(e.color, '#f1c40f');
+  const skin = cosmeticVisual(e.skin) || {};
+  const glow = skin.emissive ? `filter:drop-shadow(0 0 6px ${skin.emissive});` : '';
+  const shine = skin.metalness > 0.5 ? '<rect x="42" y="66" width="8" height="52" rx="4" fill="rgba(255,255,255,0.55)"/>' : '';
+  const head = cosmeticVisual(e.head), hair = cosmeticVisual(e.hair), outfit = cosmeticVisual(e.outfit), acc = cosmeticVisual(e.accessory);
+  let parts = '';
+  if (head) parts += head.shape === 'box'
+    ? `<rect x="42" y="30" width="36" height="36" fill="${head.color}"/>`
+    : `<circle cx="60" cy="48" r="20" fill="${head.color}"/>`;
+  if (hair) parts += hair.shape === 'spikes'
+    ? [0,1,2,3,4].map(i => `<polygon points="${38+i*11},34 ${43+i*11},14 ${48+i*11},34" fill="${hair.color}"/>`).join('')
+    : `<circle cx="60" cy="30" r="24" fill="${hair.color}"/>`;
+  if (outfit) parts += `<rect x="36" y="${outfit.y > 0 ? 88 : 108}" width="48" height="8" rx="4" fill="${outfit.color}"/>`;
+  if (acc) parts += `<ellipse cx="60" cy="10" rx="20" ry="5" fill="none" stroke="${acc.color}" stroke-width="4"/>`;
+  box.innerHTML = `<svg viewBox="0 0 120 170" style="${glow}">
+    <rect x="34" y="40" width="52" height="110" rx="26" fill="${body}"/>${shine}${parts}</svg>`;
+}
+
+// ---------- QUICK CHAT + REACTIONS (Phase 16) ----------
+// Preset-only (server validates against the same fixed tables) — no free-text
+// input exists on the client either, so there is nothing to sanitize here.
+const QUICK_CHAT_ITEMS = [['lol','LOL 😂'],['help','HELP!'],['run','RUN!'],['wait','WAIT!'],['comeHere','COME HERE'],['nice','NICE!'],['noWay','NO WAY!'],['what','WHAT?!'],['gg','GG'],['bruh','BRUH 💀'],['runAway','RUN AWAY!']];
+const REACTION_ITEMS = [['laugh','😂'],['cry','😭'],['skull','💀'],['scream','😱'],['side','🤨'],['fire','🔥'],['heart','❤️'],['zap','⚡']];
+
+function buildPanel(panelId, items, className, onPick) {
+  const panel = document.getElementById(panelId);
+  items.forEach(([key, label]) => {
+    const el = document.createElement('div'); el.className = className; el.textContent = label;
+    el.addEventListener('click', () => onPick(key));
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); onPick(key); }, { passive: false });
+    panel.appendChild(el);
+  });
+}
+function toggleChatPanel(force) {
+  const open = force !== undefined ? force : !document.getElementById('chatPanel').classList.contains('open');
+  document.getElementById('chatPanel').classList.toggle('open', open);
+  document.getElementById('reactPanel').classList.remove('open');
+}
+function toggleReactPanel(force) {
+  const open = force !== undefined ? force : !document.getElementById('reactPanel').classList.contains('open');
+  document.getElementById('reactPanel').classList.toggle('open', open);
+  document.getElementById('chatPanel').classList.remove('open');
+}
+function sendQuickChat(key) {
+  toggleChatPanel(false);
+  if (ws && ws.readyState === WebSocket.OPEN && !isDead) ws.send(JSON.stringify({ type: 'quick_chat', key }));
+}
+function sendReaction(key) {
+  toggleReactPanel(false);
+  if (ws && ws.readyState === WebSocket.OPEN && !isDead) ws.send(JSON.stringify({ type: 'reaction', key }));
+}
+buildPanel('chatPanel', QUICK_CHAT_ITEMS, 'qcItem', sendQuickChat);
+buildPanel('reactPanel', REACTION_ITEMS, 'rxItem', sendReaction);
+document.getElementById('chatBtn').addEventListener('click', () => toggleChatPanel());
+document.getElementById('reactBtn').addEventListener('click', () => toggleReactPanel());
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  if (e.code === 'KeyC' && !emoteWheelOpen) toggleChatPanel();
+  if (e.code === 'KeyX' && !emoteWheelOpen) toggleReactPanel();
+});
+
+// Message bubble above a player's head: name -> text, fades out. Own
+// messages show above the local camera/HUD isn't meaningful in first-person,
+// so they render above the player's own remote mesh only for OTHER viewers;
+// a local player instead gets a lightweight on-screen toast for feedback.
+function showChatBubble(token, text) {
+  if (token === myId) { showToast(text, 1800); return; }
+  const r = remotePlayers[token]; if (!r) return;
+  const c = document.createElement('canvas'); c.width = 288; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(10,10,20,0.75)';
+  (ctx.roundRect ? ctx.roundRect(4, 4, 280, 56, 14) : ctx.rect(4, 4, 280, 56)); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = '700 24px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(text.slice(0, 20), 144, 40);
+  const tex = new THREE.CanvasTexture(c);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
+  sprite.scale.set(1.5, 0.34, 1); sprite.position.set(0, 2.75, 0); sprite.renderOrder = 1000;
+  r.mesh.add(sprite);
+  setTimeout(() => { r.mesh.remove(sprite); tex.dispose(); sprite.material.dispose(); }, 2400);
+}
+// Reaction: bigger emoji that floats upward, independent of the name/chat sprites.
+function showReactionBubble(token, emoji) {
+  const r = remotePlayers[token];
+  const targetMesh = token === myId ? camera : (r && r.mesh);
+  if (!targetMesh) return;
+  const c = document.createElement('canvas'); c.width = 96; c.height = 96;
+  const ctx = c.getContext('2d'); ctx.font = '64px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, 48, 52);
+  const tex = new THREE.CanvasTexture(c);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
+  sprite.scale.set(0.7, 0.7, 1); sprite.position.set(0.4, 2.0, 0); sprite.renderOrder = 1000;
+  targetMesh.add(sprite);
+  const start = performance.now();
+  (function rise() {
+    const t = (performance.now() - start) / 1100;
+    if (t >= 1) { targetMesh.remove(sprite); tex.dispose(); sprite.material.dispose(); return; }
+    sprite.position.y = 2.0 + t * 0.6;
+    sprite.material.opacity = 1 - t;
+    requestAnimationFrame(rise);
+  })();
+}
+
+// ---------- MOBILE VIRTUAL JOYSTICK (Phase 21) ----------
+// Feeds the SAME `keys[...]` booleans the existing WASD movement already
+// reads, so one movement code path serves PC and mobile — no parallel
+// movement system. Only shown/activated on touch devices.
+let joyTouchId = null, joyDir = { x: 0, y: 0 };
+function joystickShow() { if (IS_TOUCH_DEVICE) document.getElementById('moveJoystick').classList.add('active'); }
+(function setupJoystick() {
+  const base = document.getElementById('moveJoystick'), knob = document.getElementById('moveJoystickKnob');
+  const R = 46;
+  function setKnob(dx, dy) { knob.style.transform = `translate(${dx}px, ${dy}px)`; }
+  function updateKeys() {
+    const dead = 0.18;
+    keys['KeyW'] = joyDir.y < -dead; keys['KeyS'] = joyDir.y > dead;
+    keys['KeyA'] = joyDir.x < -dead; keys['KeyD'] = joyDir.x > dead;
+  }
+  function clearJoy() {
+    joyTouchId = null; joyDir = { x: 0, y: 0 }; setKnob(0, 0);
+    keys['KeyW'] = keys['KeyS'] = keys['KeyA'] = keys['KeyD'] = false;
+  }
+  base.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (joyTouchId !== null) return;
+    const t = e.changedTouches[0]; joyTouchId = t.identifier;
+  }, { passive: false });
+  document.addEventListener('touchmove', (e) => {
+    if (joyTouchId === null) return;
+    const t = [...e.changedTouches].find((x) => x.identifier === joyTouchId); if (!t) return;
+    e.preventDefault();
+    const rect = base.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+    let dx = t.clientX - cx, dy = t.clientY - cy;
+    const len = Math.hypot(dx, dy) || 1;
+    const clamped = Math.min(len, R);
+    dx = dx / len * clamped; dy = dy / len * clamped;
+    setKnob(dx, dy);
+    joyDir = { x: dx / R, y: dy / R };
+    updateKeys();
+  }, { passive: false });
+  document.addEventListener('touchend', (e) => { if ([...e.changedTouches].some((x) => x.identifier === joyTouchId)) clearJoy(); });
+  document.addEventListener('touchcancel', (e) => { if ([...e.changedTouches].some((x) => x.identifier === joyTouchId)) clearJoy(); });
+})();
+
+// ---------- FOOTSTEPS (Phases 17-19) ----------
+// Synthesized (no sampled audio), cadence/material from public/animstate.js.
+// Only the LOCAL player triggers its own footsteps (remote players' footsteps
+// aren't simulated — no per-remote audio distance model exists yet).
+const FOOTSTEP_TONES = {
+  default: () => playTone(180, 90, 0.06, 'triangle', 0.06),
+  grass:   () => playTone(220, 120, 0.05, 'triangle', 0.05),
+  metal:   () => playTone(500, 300, 0.05, 'square', 0.05),
+  stone:   () => playTone(150, 80, 0.06, 'square', 0.06),
+  wood:    () => playTone(260, 150, 0.05, 'triangle', 0.06),
+};
+let lastFootstepAt = 0;
+let currentMoveState = 'idle';
+// No material/surface system exists yet (per-tile or per-mesh tagging), so
+// this always resolves to 'default' today; footstepMaterialKey keeps the
+// per-material dispatch ready for when one is added, without a second system.
+let currentGroundMaterial = 'default';
+function updateFootsteps(state, now) {
+  currentMoveState = state;
+  const interval = window.BBAnim.footstepIntervalMs(state);
+  if (!interval) { lastFootstepAt = 0; return; }
+  if (now - lastFootstepAt < interval) return;
+  lastFootstepAt = now;
+  const key = window.BBAnim.footstepMaterialKey(currentGroundMaterial);
+  (FOOTSTEP_TONES[key] || FOOTSTEP_TONES.default)();
+}
+
+function handleMessage(msg) {
+  if (msg.type === 'hello_ok') {
+    myId = msg.token;
+    storeToken(myId);
+    unlockedEffects = msg.unlocks || {};
+    cosmeticCatalog = msg.catalog || {};
+    if (ws._readyCb) { const cb = ws._readyCb; ws._readyCb = null; cb(); }
+    startPingLoop();
+  } else if (msg.type === 'pong') {
+    handlePong(msg);
+  } else if (msg.type === 'hit_confirm') {
+    handleHitConfirm(msg);
+  } else if (msg.type === 'position_correct') {
+    // Server rejected our claimed position (or realigned us after rejoin).
+    // Snap back to the server's authoritative spot; yaw/pitch stay ours.
+    if (Number.isFinite(msg.x) && Number.isFinite(msg.z)) camera.position.set(msg.x, 1.6, msg.z);
+  } else if (msg.type === 'room_created' || msg.type === 'room_joined') {
+    // room_state bir az sonra gələcək, kod isə burda gəlir
+  } else if (msg.type === 'join_error') {
+    const reasons = {
+      NOT_FOUND: 'Bu koda uyğun otaq tapılmadı.',
+      FULL: 'Otaq doludur.',
+      ALREADY_STARTED: 'Oyun artıq başlayıb.',
+      RATE_LIMITED: 'Çox cəhd etdin, bir az gözlə.',
+    };
+    showErr('joinError', reasons[msg.reason] || 'Qoşulmaq alınmadı.');
+  } else if (msg.type === 'start_rejected') {
+    showErr('lobbyError', msg.reason === 'NOT_ALL_READY' ? 'Hamı hazır olmalıdır.' : 'Başlada bilmədi.');
+  } else if (msg.type === 'room_state' || msg.type === 'room_rejoined') {
+    syncChaosFromRoomState(msg.chaos);
+    if (scene) syncBananas(msg.bananas); // reconnect / late join: live bananas + peels come from the server snapshot
+    const wasInLobby = !!room;
+    room = msg;
+    renderLobby();
+    if (!wasInLobby) showScreen('screen-lobby');
+  } else if (msg.type === 'player_joined') {
+    showToast(`${msg.name} qoşuldu`, 2000);
+  } else if (msg.type === 'player_left') {
+    showToast(`Bir oyunçu ayrıldı`, 1800);
+  } else if (msg.type === 'player_reconnected') {
+    showToast(`Oyunçu yenidən qoşuldu`, 1800);
+  } else if (msg.type === 'achievement_unlocked') {
+    (msg.grants || [msg.id === 'thunder_hammer_survivor' ? 'thunderHammer' : msg.id]).forEach(id => { unlockedEffects[id] = true; });
+    showToast(`🏆 NEW UNLOCKED: ${msg.name}`, 4500);
+    if (msg.id === 'jojo_reference_found') playJojoSfx(); // secret-found moment gets its sound
+  } else if (msg.type === 'interact_ok' || msg.type === 'interact_rejected') {
+    if (msg.reason === 'TOO_FAR') showToast('Bura kifayət qədər yaxın deyilsən 🤔', 2000);
+  } else if (msg.type === 'equip_ok') {
+    const cid = msg.cosmeticId || msg.effect;
+    const ctype = msg.cosmeticType || 'deathEffect';
+    equippedByType[ctype] = cid;
+    renderCosmetics();
+    renderCharacterScreen();
+  } else if (msg.type === 'equip_rejected') {
+    showToast('Bu hələ açılmayıb 🔒', 2500);
+  } else if (msg.type === 'quick_chat') {
+    showChatBubble(msg.token, msg.text);
+  } else if (msg.type === 'chat_rejected') {
+    if (msg.reason === 'COOLDOWN') showToast('Chat cooldown…', 600);
+  } else if (msg.type === 'reaction') {
+    showReactionBubble(msg.token, msg.emoji);
+  } else if (msg.type === 'emote_used') {
+    showRemoteEmote(msg.token, msg.text);
+    if (msg.duration) startEmoteAnim(msg.token, msg.emoteId, msg.duration);
+    if (msg.sfx) playEmoteSfx(msg.sfx);
+    if (msg.icon) showReactionBubble(msg.token, msg.icon); // Phase 16: emote+chat integration — reaction bubble alongside the animation
+  } else if (msg.type === 'emote_end') {
+    stopEmoteAnim(msg.token);
+  } else if (msg.type === 'emote_rejected') {
+    if (msg.reason === 'COOLDOWN') showToast('Emote cooldown…', 700);
+  } else if (msg.type === 'game_started') {
+    if (gameStarted) {
+      // In-page reconnect (the socket dropped and re-helloed): the scene, renderer, animate loop and
+      // listeners already exist. Rebuilding them would stack a second canvas + a second animate()
+      // loop (double movement per frame). Just refresh server-owned state.
+      menu.style.display = 'none'; hud.style.display = 'block';
+      hideMatchEnd(); kills = 0; deaths = 0;
+      document.getElementById('killNum').textContent = '0'; document.getElementById('deathNum').textContent = '0';
+      document.getElementById('bountyBadge').style.display = 'none';
+      applyServerPickups(msg.pickups);
+      joystickShow();
+    } else {
+      if (!msg.rejoin) showScreen('screen-main'); // menu overlay startGame() içində gizlədiləcək
+      startGame(msg.map, msg.mapSeed);
+      applyServerPickups(msg.pickups);
+      joystickShow();
+    }
+  } else if (msg.type === 'match_state') {
+    matchEndsAtLocal = msg.state === 'active' ? Date.now() + (Number(msg.remainingMs) || 0) : 0;
+    if (msg.state === 'countdown') showToast('⏳ MATCH ' + Math.max(1, Math.ceil((Number(msg.countdownMs) || 0) / 1000)) + ' san-ə başlayır', Math.max(800, Number(msg.countdownMs) || 0));
+    else if (msg.state === 'active') showToast('GO!', 900);
+  } else if (msg.type === 'match_end') {
+    clearBananaMeshes(); bananaHolder = false;
+    if (stunned) endKnockdown();
+    showMatchEnd(msg);
+  } else if (msg.type === 'kill_streak') {
+    showToast(streakLabel(Number(msg.streak) || 0) + ' — ' + String(msg.name || ''), 2200);
+  } else if (msg.type === 'bounty_set') {
+    const b = document.getElementById('bountyBadge'); b.textContent = '🎯 BOUNTY: ' + String(msg.name || ''); b.style.display = 'block';
+  } else if (msg.type === 'bounty_claimed') {
+    document.getElementById('bountyBadge').style.display = 'none';
+    showToast('🎯 ' + String(msg.hunterName || '') + ' bounty topladı: ' + String(msg.targetName || ''), 2600);
+  } else if (msg.type === 'killcam') {
+    showToast('KILLCAM — ' + String(msg.attackerName || ''), Number(msg.durationMs) || 2500);
+  } else if (msg.type === 'weapon_ok' || msg.type === 'weapon_changed' || msg.type === 'weapon_rejected') {
+    // weapon HUD/visual hook: server owns the state (weaponId in public state); nothing to trust from here
+  } else if (msg.type === 'pickup_state') {
+    applyPickupState(msg);
+  } else if (msg.type === 'state') {
+    for (const id in msg.players) {
+      if (id === myId) { const mine = msg.players[id]; if (mine && typeof mine.weaponId === 'string') loadRealWeapon(mine.weaponId); if (mine && typeof mine.slot === 'string' && mine.slot !== mySlot) applySlot(mine.slot); continue; } // first-person weapon follows the server-owned weaponId
+      const p = msg.players[id];
+      const hasMeta = typeof p.name === 'string'; // server sends position-only entries between meta changes (interest management)
+      if (!remotePlayers[id]) { if (!hasMeta) continue; spawnRemote(id, p); } // unknown + no meta: wait for the next full entry (server resends within ~4 s)
+      remotePlayers[id].targetPos = new THREE.Vector3(p.x, p.y, p.z);
+      remotePlayers[id].targetRy = p.ry;
+      if (!hasMeta) continue;
+      remotePlayers[id].team = p.team;
+      remotePlayers[id].mode = p.mode;
+      remotePlayers[id].mesh.material.color.set(remoteBodyColor(id, p)); tintBodyModel(id, remotePlayers[id]);
+      applyRemoteCosmetics(remotePlayers[id], p, id);
+      {
+        const titleText = (p.title && p.title !== 'titleNone' && cosmeticCatalog[p.title]) ? cosmeticCatalog[p.title].name : null;
+        const badgeIcon = (p.badge && p.badge !== 'badgeNone' && cosmeticCatalog[p.badge] && cosmeticCatalog[p.badge].icon) ? cosmeticCatalog[p.badge].icon : null;
+        const sig = p.name + '|' + (titleText || '') + '|' + (badgeIcon || '');
+        if (remotePlayers[id].nameSig !== sig) attachNameplate(id, p.name, titleText, badgeIcon);
+      }
+    }
+    if (Array.isArray(msg.roster)) { // removal is driven by the roster, not by absence from a (possibly partial) tick
+      const inRoster = new Set(msg.roster);
+      for (const id in remotePlayers) {
+        if (!inRoster.has(id)) removeRemotePlayer(id);
+      }
+    }
+  } else if (msg.type === 'shoot') {
+    sfxShoot();
+  } else if (msg.type === 'damage') {
+    if (msg.id === myId) {
+      health = msg.health;
+      updateHealthUI();
+      sfxHit();
+    }
+  } else if (msg.type === 'kill') {
+    addKillFeed(msg.text);
+    sfxWomp();
+    playDeathVoice(msg.victimId, msg.x, msg.z);
+    playDeathEffect(msg.deathEffect, msg.x, msg.y, msg.z);
+    if (msg.killerId === myId) { kills++; document.getElementById('killNum').textContent = kills; }
+    if (msg.victimId === myId) { deaths++; document.getElementById('deathNum').textContent = deaths; }
+    // NOTE: health is no longer reset to 100 here — the victim now stays
+    // dead/spectating until the server actually respawns them (see
+    // 'you_died' / 'respawn' below). Health display for the dead player is
+    // frozen at 0 by the 'you_died' handler.
+  } else if (msg.type === 'you_died') {
+    enterSpectatorMode(msg.respawnInMs);
+  } else if (msg.type === 'spectate_state') {
+    spectateTargetId = msg.targetToken;
+    spectateTargetName = msg.targetName || null;
+    spectateWaiting = !msg.targetToken;
+    updateSpectateOverlay();
+  } else if (msg.type === 'spectate_end') {
+    exitSpectatorMode();
+  } else if (msg.type === 'respawn') {
+    if (msg.id === myId) {
+      camera.position.set(msg.x, msg.y, msg.z);
+    }
+  } else if (msg.type === 'troll') {
+    if (msg.targetId === myId) {
+      trollUntil = performance.now() + 5000;
+      const el = document.getElementById('trollmsg');
+      el.textContent = msg.text;
+      el.style.display = 'block';
+      sfxTroll();
+      setTimeout(()=>{ el.style.display='none'; }, 3000);
+    }
+  } else if (msg.type === 'chat') {
+    addKillFeed(msg.text);
+  } else if (msg.type === 'thor_event') {
+    triggerThorEvent(msg.x, msg.y, msg.z, msg.ry, msg.targetId === myId);
+    if (msg.targetId === myId) setTimeout(() => addKillFeed('😨 Thor qarşındadır... tərpənmə!'), 700);
+  } else if (msg.type === 'thor_strike') {
+    triggerThorStrike(msg.x, msg.y, msg.z);
+  } else if (msg.type === 'thor_hit') {
+    if (msg.targetId === myId) {
+      startKnockdown();
+    } else if (remotePlayers[msg.targetId]) {
+      remotePlayers[msg.targetId].fallenUntil = performance.now() + 10000;
+    }
+  } else if (msg.type === 'self_state') {
+    updateStaminaUI(msg.stamina, msg.dashReady);
+    if (typeof msg.bombCooldownMs === 'number') bombReadyAt = performance.now() + msg.bombCooldownMs; // server-owned cooldown (also correct after a reconnect)
+    if (typeof msg.slot === 'string' && msg.slot !== mySlot) applySlot(msg.slot);
+  } else if (msg.type === 'dash_ok') {
+    dashUntil = performance.now() + 180;
+    dashDir = pendingDashDir.clone();
+    sfxDash();
+    if (camera) { camera._dashFovPunch = 12; }
+  } else if (msg.type === 'dash_rejected') {
+    shakeStaminaBar();
+  } else if (msg.type === 'dash_used') {
+    spawnDashTrail(msg.token);
+  } else if (msg.type === 'chaos_event') {
+    handleChaosEvent(msg);
+  } else if (msg.type === 'chaos_event_end') {
+    handleChaosEventEnd(msg);
+  } else if (typeof msg.type === 'string' && msg.type.startsWith('banana_')) {
+    handleBananaMessage(msg);
+  } else if (typeof msg.type === 'string' && (msg.type.startsWith('bomb_') || msg.type === 'slot_ok' || msg.type === 'slot_rejected')) {
+    handleSlotAndBombMessage(msg);
+  }
+}
+
+function playDeathEffect(effect, x, y, z) {
+  if (!settings.deathEffects) return;
+  if (effect === 'thunderHammer' && typeof x === 'number') {
+    flashLightning();
+    sfxThunder();
+    for (let i = 0; i < 4; i++) {
+      setTimeout(() => spawnLightningArc(new THREE.Vector3(x, y + 1, z)), i * 70);
+    }
+  } else if (effect === 'jojoRoad' && typeof x === 'number') {
+    showChaosBanner('🛣️ YOL SİLİNDİRİİİ!!! 🛣️');
+    flashLightning();
+    playJojoSfx();
+  } else if (effect === 'ashesFire' && typeof x === 'number') {
+    spawnAshesFireEffect(x, y, z);
+  }
+}
+
+function teamColor(team, mode) {
+  if (mode === 'team') return team === 1 ? 0xe63946 : 0x457bff;
+  if (mode === 'zombie') return 0x2ecc71;
+  return 0xf1c40f;
+}
+
+function addKillFeed(text) {
+  const feed = document.getElementById('killfeed');
+  const div = document.createElement('div');
+  div.textContent = text;
+  feed.prepend(div);
+  setTimeout(()=>div.remove(), 5000);
+}
+function updateHealthUI() {
+  document.getElementById('healthNum').textContent = Math.max(0, Math.round(health));
+  document.getElementById('healthfill').style.width = Math.max(0,health) + '%';
+}
+
+// ---------- SPECTATOR MODE (Phase 1) ----------
+function enterSpectatorMode(respawnInMs) {
+  isDead = true;
+  document.body.classList.add('spectating');
+  health = 0;
+  updateHealthUI();
+  spectateTargetId = null;
+  spectateWaiting = false;
+  document.getElementById('spectateOverlay').classList.add('active');
+  document.getElementById('spectateRespawnHint').textContent =
+    respawnInMs ? `Respawn in ~${Math.ceil(respawnInMs / 1000)}s` : '';
+  if (document.pointerLockElement === renderer.domElement) document.exitPointerLock();
+  requestSpectate(null); // ask the server for an initial target
+}
+
+function exitSpectatorMode() {
+  isDead = false;
+  document.body.classList.remove('spectating');
+  spectateTargetId = null;
+  spectateWaiting = false;
+  document.getElementById('spectateOverlay').classList.remove('active');
+}
+
+function requestSpectate(direction) {
+  if (!isDead || !ws || ws.readyState !== WebSocket.OPEN) return;
+  const msg = { type: 'spectate_request' };
+  if (direction) msg.direction = direction;
+  ws.send(JSON.stringify(msg));
+}
+
+function updateSpectateOverlay() {
+  const nameEl = document.getElementById('spectateTargetName');
+  if (spectateWaiting || !spectateTargetId) {
+    nameEl.textContent = 'WAITING FOR PLAYERS';
+    return;
+  }
+  const target = remotePlayers[spectateTargetId];
+  nameEl.textContent = (target && target.name) ? target.name : '...';
+}
+
+document.getElementById('spectatePrev').addEventListener('click', () => requestSpectate('prev'));
+document.getElementById('spectatePrev').addEventListener('touchstart', (e) => { e.preventDefault(); requestSpectate('prev'); });
+document.getElementById('spectateNext').addEventListener('click', () => requestSpectate('next'));
+document.getElementById('spectateNext').addEventListener('touchstart', (e) => { e.preventDefault(); requestSpectate('next'); });
+
+// ---------- THREE.JS SƏHNƏ ----------
+let scene, camera, renderer, obstacles = [], trollPickups = [];
+let viewGun, casings = [], recoilT = 0;
+let velocity = new THREE.Vector3();
+let canJump = true;
+const keys = {};
+let yaw = 0, pitch = 0;
+let gameStarted = false;
+
+// Server-owned troll pickups. The server decides ids/positions/active state;
+// the client only renders them and reports "I touched pickup <id>".
+function applyServerPickups(list) {
+  if (!scene || !Array.isArray(list)) return;
+  trollPickups.forEach((b) => { scene.remove(b); b.geometry.dispose(); b.material.dispose(); });
+  trollPickups = [];
+  list.forEach((pk) => {
+    if (!pk || typeof pk.id !== 'string' || typeof pk.x !== 'number' || typeof pk.z !== 'number') return;
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 12), new THREE.MeshStandardMaterial({ color:0xffe100, emissive:0x554400 }));
+    ball.position.set(pk.x, 1, pk.z);
+    ball.visible = !!pk.active;
+    ball.userData.id = pk.id;
+    ball.userData.pendingUntil = 0;
+    scene.add(ball);
+    trollPickups.push(ball);
+  });
+}
+function applyPickupState(msg) {
+  const ball = trollPickups.find((b) => b.userData.id === msg.id);
+  if (!ball) return;
+  if (typeof msg.x === 'number' && typeof msg.z === 'number') ball.position.set(msg.x, 1, msg.z);
+  ball.visible = !!msg.active;
+  ball.userData.pendingUntil = 0;
+}
+
+// ---------- GRAPHICS PROFILE (public/gfx.js) ----------
+// The quality setting now changes real rendering: pixel ratio and a directional sun shadow (Low = none, Medium = 1024 PCF, High = 2048 soft PCF; touch devices use one
+// tier lower). Applied atomically: PREPARE (plan) -> VALIDATE (device limits) -> APPLY -> VERIFY (read back) -> COMMIT; any failure ROLLs BACK to what was there before.
+// Client-only: never sent to the server, no gameplay/collision effect. If a shader fails to compile with shadows on, the profile falls back to Low (the saved setting is untouched).
+let sunLight = null, gfxState = null, gfxFallback = false;
+function markShadow(root, cast, receive) { // meshes only; transparent / invisible ones (hit proxies, glass, sprites) never take part
+  root.traverse((o) => {
+    if (!o.isMesh || !o.material) return;
+    const m = Array.isArray(o.material) ? o.material[0] : o.material;
+    if (!m || m.transparent || m.visible === false) return;
+    o.castShadow = cast; o.receiveShadow = receive;
+  });
+}
+function gfxToRaw(p) { const s = p.shadows; return { pr: p.pixelRatio, on: s.enabled, type: s.type === 'pcfsoft' ? THREE.PCFSoftShadowMap : THREE.PCFShadowMap, size: s.size, half: s.half }; }
+function gfxSnapshot() { const sh = sunLight.shadow; return { pr: renderer.getPixelRatio(), on: renderer.shadowMap.enabled, type: renderer.shadowMap.type, size: sh.mapSize.x, half: sh.camera.right }; }
+function gfxApplyRaw(r) {
+  renderer.setPixelRatio(r.pr); renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = r.on; renderer.shadowMap.type = r.type;
+  sunLight.castShadow = r.on;
+  const sh = sunLight.shadow;
+  if (r.size > 0 && sh.mapSize.x !== r.size) { sh.mapSize.set(r.size, r.size); if (sh.map) { sh.map.dispose(); sh.map = null; } } // a different size needs a new render target
+  if (r.half > 0) { const c = sh.camera; c.left = -r.half; c.right = r.half; c.top = r.half; c.bottom = -r.half; c.near = 1; c.far = 90; c.updateProjectionMatrix(); }
+  sh.bias = -0.0004; sh.normalBias = 0.03;
+  const seen = new Set(); // shadow support is part of a material's program: every material must recompile once
+  scene.traverse((o) => { if (!o.material) return; for (const m of (Array.isArray(o.material) ? o.material : [o.material])) if (!seen.has(m)) { seen.add(m); m.needsUpdate = true; } });
+}
+function gfxVerify(p) {
+  const s = p.shadows;
+  return renderer.getPixelRatio() === p.pixelRatio && renderer.shadowMap.enabled === s.enabled && sunLight.castShadow === s.enabled && (!s.enabled || sunLight.shadow.mapSize.x === s.size);
+}
+function applyGraphics(quality) {
+  let prev = null;
+  try {
+    const p = BBGfx.plan(quality, IS_TOUCH_DEVICE, window.devicePixelRatio);                       // PREPARE
+    const v = BBGfx.validate(p, { maxTextureSize: renderer.capabilities.maxTextureSize });         // VALIDATE
+    if (!v.ok) { console.warn('graphics: plan rejected (' + v.reason + '), keeping the current profile'); return false; }
+    prev = gfxSnapshot();
+    gfxApplyRaw(gfxToRaw(p));                                                                      // APPLY
+    if (!gfxVerify(p)) throw new Error('read-back does not match the plan');                       // VERIFY
+    gfxState = { quality, plan: p, frames: 0 };                                                    // COMMIT
+    return true;
+  } catch (e) {
+    console.warn('graphics: applying the profile failed, rolled back', e);
+    if (prev) { try { gfxApplyRaw(prev); } catch (e2) { console.error('graphics: rollback failed', e2); } }                                 // ROLLBACK
+    return false;
+  }
+}
+// ---------- METAL ENVIRONMENT (procedural, metals only) ----------
+// A metal with no environment to reflect only shows direct-light highlights (its diffuse is albedo x (1 - metalness), and the hemisphere light is diffuse-only), so Mjolnir
+// (metalness 0.85) and the weapons (0.55) read dark. One small PROCEDURAL sky/ground gradient (not a photo, not an authored asset) is prefiltered once and set as
+// envMap on those materials only. It is deliberately NOT scene.environment, which would relight trees, floors and skins. Low tier: none. Any failure: no env, one warning.
+let metalEnv = null, metalEnvFailed = false;
+function getMetalEnv() {
+  if (metalEnv) return metalEnv;
+  if (metalEnvFailed || !gfxState || gfxState.plan.tier === 'low' || !renderer) return null;
+  try {
+    const cv = document.createElement('canvas'); cv.width = 256; cv.height = 128; const g = cv.getContext('2d');
+    const grd = g.createLinearGradient(0, 0, 0, 128);
+    grd.addColorStop(0, '#8fb8ff'); grd.addColorStop(0.45, '#e8eef7'); grd.addColorStop(0.5, '#cfd3d9'); grd.addColorStop(0.55, '#4a4640'); grd.addColorStop(1, '#2a2824');
+    g.fillStyle = grd; g.fillRect(0, 0, 256, 128);
+    const sun = g.createRadialGradient(64, 28, 0, 64, 28, 22); sun.addColorStop(0, 'rgba(255,248,225,1)'); sun.addColorStop(1, 'rgba(255,248,225,0)'); g.fillStyle = sun; g.fillRect(0, 0, 256, 128);
+    const tex = new THREE.CanvasTexture(cv); tex.mapping = THREE.EquirectangularReflectionMapping; tex.encoding = THREE.sRGBEncoding;
+    const pm = new THREE.PMREMGenerator(renderer); const rt = pm.fromEquirectangular(tex);
+    metalEnv = rt.texture; pm.dispose(); tex.dispose();
+    return metalEnv;
+  } catch (e) { metalEnvFailed = true; console.warn('graphics: metal environment unavailable, metals stay on direct light only', e); return null; }
+}
+function applyMetalEnv(mat, intensity) { const e = getMetalEnv(); if (!e || !mat) return; mat.envMap = e; mat.envMapIntensity = intensity; mat.needsUpdate = true; }
+
+function gfxTick() { // once per frame from animate(): keep the shadow camera on the player in whole-texel steps; one best-effort health check
+  if (!gfxState || !sunLight) return;
+  const s = gfxState.plan.shadows;
+  if (s.enabled) {
+    const f = BBGfx.shadowFit(camera.position, s.half, s.size);
+    sunLight.position.set(f.px, f.py, f.pz); sunLight.target.position.set(f.tx, f.ty, f.tz); sunLight.target.updateMatrixWorld();
+    if (++gfxState.frames === 240) {
+      try {
+        if ((renderer.info.programs || []).some((q) => q.diagnostics && q.diagnostics.runnable === false)) {
+          console.warn('graphics: a shader failed to compile with shadows on, falling back to the Low profile (saved setting unchanged)');
+          gfxFallback = true; applyGraphics('low');
+        }
+      } catch (e) {}
+    }
+  }
+}
+
+function initScene(mapName, mapSeed) {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a0a2e);
+  scene.fog = new THREE.Fog(0x1a0a2e, 10, 60);
+
+  camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
+  camera.position.set(0, 1.6, 0);
+
+  renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setSize(innerWidth, innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x222244, 1.0);
+  scene.add(hemi);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+  dir.position.set(10,20,10);
+  scene.add(dir);
+  scene.add(dir.target); // the shadow camera aims at this (kept on the player by gfxTick)
+  sunLight = dir;
+  applyGraphics(settings.graphicsQuality);
+
+  buildMapContent(mapName || 'purple', mapSeed);
+  spawnJojoSecret(); // bütün xəritələrdə eyni sabit koordinatda (34,-34) - kəşf edilə bilən gizli referans
+
+  // troll pickup-lar: artıq SERVER-OWNED (game_started.pickups + pickup_state).
+  // Client burada təsadüfi top yaratmır; applyServerPickups() çağırılana qədər siyahı boşdur.
+  trollPickups = [];
+
+  // kamera + birinci şəxs silah modeli (sadə poliqonal - real model yüklənəndə əvəz olunur)
+  scene.add(camera);
+  viewGun = new THREE.Group();
+  const metal = new THREE.MeshStandardMaterial({ color:0x2b2b2b, metalness:0.6, roughness:0.4 });
+  const accent = new THREE.MeshStandardMaterial({ color:0x8e2de2, metalness:0.3, roughness:0.5 });
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.5), metal);
+  const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.05,0.05,0.3), metal);
+  barrel.position.set(0,0.02,-0.35);
+  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.08,0.2,0.08), accent);
+  grip.position.set(0,-0.12,0.15);
+  const mag = new THREE.Mesh(new THREE.BoxGeometry(0.06,0.18,0.08), metal);
+  mag.position.set(0,-0.15,-0.02);
+  viewGun.add(body, barrel, grip, mag);
+  viewGun.position.set(0.28, -0.28, -0.55);
+  viewGun.rotation.y = Math.PI;
+  camera.add(viewGun);
+  loadBombProto();
+  loadRealWeapon('w001'); // the server's state tick corrects this to the real weaponId as soon as it arrives
+  startPerfOverlay(); // only active with ?perf=1
+
+  window.addEventListener('resize', ()=>{
+    camera.aspect = innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+}
+
+// ---------- XƏRİTƏLƏR (Kenney modelləri) ----------
+const gltfLoader = new THREE.GLTFLoader();
+const texLoader = new THREE.TextureLoader();
+const gltfCache = {};
+
+// MATERIAL FIX (measured, tools/graphics_audit.py): all 36 nature GLB materials (leaves, bark, dirt, stone, wood, flower colours, mushrooms) are exported with
+// metallicFactor = 1 and no metalness map. In three.js that means diffuse = albedo x (1 - metalness) = 0, so with no environment they render almost black. None of them is a
+// real metal (the furniture set already has metallicFactor 0), so metalness is set to 0 ONCE per parsed file (materials are shared by every clone). Anything with a
+// metalness map, or whose name says it is a metal, keeps its values.
+const GLTF_METAL_NAME = /metal|steel|iron|chrome|gold|silver|copper|brass|alumin/i;
+function normalizeGltfMaterials(root) {
+  root.traverse((o) => {
+    if (!o.isMesh || !o.material) return;
+    for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+      if (m && m.isMeshStandardMaterial && !m.metalnessMap && m.metalness > 0.5 && !GLTF_METAL_NAME.test(m.name || '')) m.metalness = 0;
+    }
+  });
+}
+function loadGLTF(url, cb) {
+  if (gltfCache[url]) { cb(gltfCache[url].clone(true)); return; }
+  gltfLoader.load(url, (g) => { normalizeGltfMaterials(g.scene); gltfCache[url] = g.scene; cb(g.scene.clone(true)); }, undefined, () => {});
+}
+
+// ---------- WIND (visual only, public/wind.js) ----------
+// Trees and flowers sway through a patched vertex shader; a few dust motes drift with the wind around the camera. It never touches gameplay, collision or the
+// network. ?wind=0 turns all of it off (stock materials, no particles). The time/gust uniforms are shared objects updated once per frame from animate().
+const WIND_ON = !/[?&]wind=0(&|$)/.test(location.search);
+const windU = { uWindTime: { value: 0 }, uWindGust: { value: 0 }, uWindDir: { value: new THREE.Vector2(BBWind.DIR.x, BBWind.DIR.z) } };
+const windPatched = []; // materials we patched, so the safety net can restore them
+let windClock = 0, windFx = null, windFrames = 0, windDisabled = !WIND_ON;
+function patchWindMaterial(m, amp) {
+  if (!m || !m.userData || m.userData.windPatched) return; // materials are shared by every clone of a GLB: patch once
+  m.userData.windPatched = true; windPatched.push(m);
+  m.onBeforeCompile = (shader) => {
+    shader.uniforms.uWindTime = windU.uWindTime; shader.uniforms.uWindGust = windU.uWindGust; shader.uniforms.uWindDir = windU.uWindDir; shader.uniforms.uWindAmp = { value: amp };
+    shader.vertexShader = shader.vertexShader.replace('#include <common>', BBWind.vertexCommon()).replace('#include <begin_vertex>', BBWind.vertexBegin());
+  };
+  m.customProgramCacheKey = () => 'bbwind'; // amp is a uniform, so every sway material shares one program (and never collides with stock materials)
+  m.needsUpdate = true;
+}
+function applyWindSway(obj, url) {
+  if (windDisabled) return;
+  const kind = BBWind.swayKind(url); if (!kind) return;
+  obj.traverse((c) => { if (!c.isMesh) return; for (const m of (Array.isArray(c.material) ? c.material : [c.material])) patchWindMaterial(m, BBWind.SWAY[kind]); });
+}
+function createWindParticles() {
+  if (windDisabled || windFx) return;
+  const n = BBWind.particleCount(settings.particleQuality, IS_TOUCH_DEVICE); if (n <= 0) return;
+  const seeds = new Float32Array(n * 4); for (let i = 0; i < seeds.length; i++) seeds[i] = Math.random();
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3)); // unused (positions come from aSeed in the shader) but three needs the count
+  geo.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 4));
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uTime: windU.uWindTime, uGust: windU.uWindGust, uWindDir: windU.uWindDir, uBox: { value: BBWind.PARTICLE_BOX }, uSize: { value: 1.0 }, uCam: { value: new THREE.Vector3() }, uColor: { value: new THREE.Color(0xe9f2c4) } },
+    vertexShader: BBWind.particleVertex(), fragmentShader: BBWind.particleFragment(), transparent: true, depthWrite: false,
+  });
+  const pts = new THREE.Points(geo, mat); pts.frustumCulled = false; // positions are computed on the GPU around the camera, so the (empty) bounding sphere must not cull it
+  scene.add(pts); windFx = { pts, geo, mat };
+}
+function disableWind() { // safety net / ?wind=0: back to stock materials and no particles
+  windDisabled = true;
+  for (const m of windPatched) { m.onBeforeCompile = () => {}; m.customProgramCacheKey = () => ''; m.needsUpdate = true; }
+  windPatched.length = 0;
+  if (windFx) { scene.remove(windFx.pts); windFx.geo.dispose(); windFx.mat.dispose(); windFx = null; }
+}
+function windTick(dt) {
+  if (windDisabled) return;
+  windClock += dt; windU.uWindTime.value = windClock; windU.uWindGust.value = BBWind.gust(windClock);
+  if (windFx) windFx.mat.uniforms.uCam.value.copy(camera.position);
+  if (++windFrames === 180) { // best-effort: if three reports a program that did not compile, drop the wind instead of leaving invisible trees
+    try { if ((renderer.info.programs || []).some((p) => p.diagnostics && p.diagnostics.runnable === false)) { console.warn('wind: a shader failed to compile, wind disabled'); disableWind(); } } catch (e) {}
+  }
+}
+
+// Decoration for forest/house comes from the SHARED deterministic plan (BBMaps.scatterPlan(map, serverSeed)): every client places the same props.
+function placeScatterPlan(mapName, seed) {
+  for (const it of BBMaps.scatterPlan(mapName, seed)) {
+    loadGLTF(it.url, (obj) => { obj.scale.setScalar(it.scale); obj.position.set(it.x, 0, it.z); obj.rotation.y = it.rotY; applyWindSway(obj, it.url); markShadow(obj, true, true); scene.add(obj); });
+  }
+}
+
+let currentLayout = null; // shared collidable layout of the current map (purple) or null (forest/house: decoration only)
+function buildMapContent(mapName, seed) {
+  currentLayout = BBMaps.layouts[mapName] || null;
+  if (mapName === 'forest') buildForestMap(seed);
+  else if (mapName === 'house') buildHouseMap(seed);
+  else { currentLayout = BBMaps.layouts.purple; buildPurpleMap(); }
+}
+
+function buildPurpleMap() {
+  // Built from the SAME layout the server uses for collision/LOS/spawns (no random boxes any more).
+  const L = BBMaps.layouts.purple;
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(L.groundSize, L.groundSize), new THREE.MeshStandardMaterial({ color: 0x3d1a5c }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true; // floors only receive; they never cast onto themselves
+  scene.add(ground);
+  const mat = new THREE.MeshStandardMaterial({ color: 0x6a0dad }); // one shared material for every obstacle
+  for (const o of L.obstacles) {
+    const box = new THREE.Mesh(new THREE.BoxGeometry(o.w, o.h, o.d), mat);
+    box.castShadow = true; box.receiveShadow = true;
+    box.position.set(o.x, o.h / 2, o.z);
+    scene.add(box);
+    obstacles.push(box);
+  }
+}
+
+function buildForestMap(seed) {
+  scene.fog = new THREE.Fog(0xbfe3ff, 20, 90);
+  const skyUrl = window.BBFeedback.skyboxFile(settings.graphicsQuality, IS_TOUCH_DEVICE); // low tier (or touch + medium) = 2048x1024 sky, else the original 4096x2048
+  const onSky = (tex) => { tex.mapping = THREE.EquirectangularReflectionMapping; scene.background = tex; };
+  texLoader.load(skyUrl, onSky, undefined, () => { if (skyUrl !== 'textures/skyboxes/day.png') texLoader.load('textures/skyboxes/day.png', onSky); }); // missing reduced file -> original
+
+  const groundGeo = new THREE.PlaneGeometry(90,90);
+  const groundMat = new THREE.MeshStandardMaterial({ color:0x4a7c3a });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI/2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  placeScatterPlan('forest', seed);
+  createWindParticles();
+}
+
+function buildHouseMap(seed) {
+  scene.fog = new THREE.Fog(0x1a1a22, 20, 70);
+  scene.background = new THREE.Color(0x14141c);
+
+  const groundGeo = new THREE.PlaneGeometry(80,80);
+  const groundMat = new THREE.MeshStandardMaterial({ color:0x7a5230 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI/2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  const warmLight = new THREE.PointLight(0xffd9a0, 1.2, 40);
+  warmLight.position.set(0, 6, 0);
+  scene.add(warmLight);
+
+  placeScatterPlan('house', seed);
+}
+
+// ---------- THOR HAMMER HADİSƏSİ ----------
+const objLoader = new THREE.OBJLoader();
+
+// ---------- ƏSL SİLAH MODELLƏRİ (all_weapons.obj-dən ayrılmış 13 fayl: models/weapons/split/) ----------
+// 13 real weapon models exist (models/weapons/split/weapon_001..013.obj, one object each, all long along X) but the source MTL/textures are missing,
+// so a generated metal texture is used. The first-person weapon follows the SERVER's weaponId (public state): w00N -> weapon_00N.obj. Real weapon
+// TYPES are UNKNOWN (the objects only have Blender default names), hence the neutral ids. weapon_006 and weapon_008 are an exact geometric duplicate.
+const VIEW_WEAPON_COUNT = 13;
+let viewWeaponId = null;
+function weaponModelPath(weaponId) {
+  const m = /^w(\d{3})$/.exec(String(weaponId)); const n = m ? parseInt(m[1], 10) : 0;
+  return 'models/weapons/split/weapon_' + String(n >= 1 && n <= VIEW_WEAPON_COUNT ? n : 1).padStart(3, '0') + '.obj'; // unknown ids fall back to weapon_001
+}
+function makeMetalTexture() {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#585d64'; ctx.fillRect(0,0,128,128);
+  for (let i=0;i<300;i++) {
+    ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.06})`;
+    ctx.fillRect(Math.random()*128, Math.random()*128, 1, 4+Math.random()*10);
+  }
+  for (let i=0;i<150;i++) {
+    ctx.fillStyle = `rgba(0,0,0,${Math.random()*0.09})`;
+    ctx.fillRect(Math.random()*128, Math.random()*128, 1, 4+Math.random()*10);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 1);
+  return tex;
+}
+
+// Read-only diagnostics for REAL-device measurement (renderer.info + cache counters). Does nothing unless the page URL has ?perf=1 (no timer, no DOM otherwise);
+// window.bbStats() is always available from a console. drawCalls/triangles are the LAST rendered frame (renderer.info autoReset), geometries/textures are live GPU-side counts.
+function bbStats() {
+  const i = renderer.info; let refs = 0; for (const k in objCache) refs += objCache[k].refs;
+  return { drawCalls: i.render.calls, triangles: i.render.triangles, geometries: i.memory.geometries, textures: i.memory.textures, programs: (i.programs || []).length, gfxTier: gfxState ? gfxState.plan.tier : null, shadows: !!(gfxState && gfxState.plan.shadows.enabled), pixelRatio: renderer.getPixelRatio(), gfxFallback, sharedModels: Object.keys(objCache).length, sharedRefs: refs, remotePlayers: Object.keys(remotePlayers).length };
+}
+window.bbStats = bbStats;
+function startPerfOverlay() {
+  if (!/[?&]perf=1(&|$)/.test(location.search)) return;
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;left:4px;bottom:4px;z-index:99999;font:11px monospace;color:#0f0;background:rgba(0,0,0,.6);padding:3px 5px;pointer-events:none;white-space:pre';
+  document.body.appendChild(d);
+  setInterval(() => { try { const t = bbStats(); d.textContent = 'calls ' + t.drawCalls + '  tris ' + t.triangles + '\ngeo ' + t.geometries + '  tex ' + t.textures + '  prog ' + t.programs + '\nshared ' + t.sharedModels + '/' + t.sharedRefs + '  remote ' + t.remotePlayers; } catch (e) {} }, 1000);
+}
+
+// Ownership: ONE metal texture for the whole page, owned by this module and never disposed (disposeObject3D frees materials, not maps, so no weapon can free it).
+// Each view weapon owns its own material + geometry (a private parse), released when it is replaced.
+let viewMetalTexture = null;
+function getViewMetalTexture() { return viewMetalTexture || (viewMetalTexture = makeMetalTexture()); }
+
+function loadRealWeapon(weaponId) {
+  if (!viewGun) return;
+  const want = weaponId || 'w001';
+  if (viewWeaponId === want) return; // already showing (or loading) this weapon
+  viewWeaponId = want;
+  objLoader.load(weaponModelPath(want), (obj) => {
+    if (viewWeaponId !== want) { disposeObject3D(obj); return; } // a newer weapon was requested while this file was loading
+    const chosen = obj.children[0];
+    if (!chosen) { disposeObject3D(obj); return; }
+    const box = new THREE.Box3().setFromObject(chosen);
+    const size = new THREE.Vector3(); box.getSize(size);
+    const center = new THREE.Vector3(); box.getCenter(center);
+    chosen.position.sub(center); // pivotu mərkəzə çək
+
+    if (chosen.isMesh) {
+      // Per-weapon finish by the OBJ's usemtl name (RECONSTRUCTED table, public/weaponmat.js - the original MTL does not exist; unknown/"None" -> the old neutral look).
+      const srcMat = Array.isArray(chosen.material) ? chosen.material[0] : chosen.material;
+      const wm = BBWeaponMat.forUsemtl(srcMat && srcMat.name), tn = BBWeaponMat.tint(wm);
+      chosen.material = new THREE.MeshStandardMaterial({ map: getViewMetalTexture(), color: new THREE.Color(tn[0], tn[1], tn[2]), metalness: wm.metalness, roughness: wm.roughness }); applyMetalEnv(chosen.material, 0.8);
+      if (srcMat && srcMat.dispose) srcMat.dispose(); // the loader's placeholder material is no longer used
+    }
+
+    const wrapper = new THREE.Group();
+    wrapper.add(chosen);
+    const maxDim = Math.max(size.x, size.y, size.z) || 1;
+    wrapper.scale.setScalar(0.55 / maxDim);
+    // NOT: modelin uzun oxu (X) irəliyə baxsın deyə fırladırıq.
+    // Əgər silah tərs görünsə, aşağıdakı işarəni dəyişməyin kifayətdir: -Math.PI/2 → Math.PI/2
+    wrapper.rotation.y = -Math.PI/2;
+
+    disposeObject3D(obj); // whatever else the parsed file held (chosen was moved into wrapper above)
+    // swap in the same synchronous step (no frame can render an empty gun), then free what was replaced: the placeholder boxes or the previous weapon's own geometry/material
+    const old = viewGun.children.slice();
+    old.forEach((c) => viewGun.remove(c));
+    viewGun.add(wrapper);
+    old.forEach((c) => disposeObject3D(c));
+  }, undefined, () => { if (viewWeaponId === want) viewWeaponId = null; }); // load failed: allow a retry on the next state tick
+}
+
+let thorHammerModel = null, thorAnim = null, thorLightningTimer = null, thorLight = null, thorHammerMat = null;
+let memeQuads = [];
+let ashesFireEffects = [];
+
+// Full cleanup: remove from scene AND free GPU resources (geometry/material).
+function disposeAshesEffect(fx) {
+  scene.remove(fx.group);
+  fx.group.traverse((c) => { if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); });
+  fx.flames.length = 0;
+}
+
+function spawnAshesFireEffect(x, y, z) {
+  // Budget comes from Particle Quality (one tier lower on touch devices) and a
+  // concurrency cap; the oldest effect is retired first when the cap is hit.
+  const budget = window.BBFeedback.ashesBudget(settings.particleQuality, IS_TOUCH_DEVICE);
+  while (ashesFireEffects.length >= budget.maxConcurrent) disposeAshesEffect(ashesFireEffects.shift());
+  const flameCount = budget.flames;
+  const emberCount = budget.embers;
+
+  const group = new THREE.Group();
+  group.position.set(x, y, z);
+  scene.add(group);
+
+  const flames = [];
+  for (let i = 0; i < flameCount; i++) {
+    const geo = new THREE.ConeGeometry(0.1 + Math.random() * 0.08, 0.35 + Math.random() * 0.25, 6);
+    const mat = new THREE.MeshBasicMaterial({ color: 0xff6a00, transparent: true, opacity: 0.9 });
+    const cone = new THREE.Mesh(geo, mat);
+    cone.position.set((Math.random() - 0.5) * 0.5, 0.2, (Math.random() - 0.5) * 0.5);
+    group.add(cone);
+    flames.push(cone);
+  }
+
+  const positions = new Float32Array(emberCount * 3);
+  const velocities = [];
+  for (let i = 0; i < emberCount; i++) {
+    positions[i*3] = (Math.random()-0.5)*0.3; positions[i*3+1] = 0.1; positions[i*3+2] = (Math.random()-0.5)*0.3;
+    velocities.push(new THREE.Vector3((Math.random()-0.5)*0.6, 0.7+Math.random()*0.7, (Math.random()-0.5)*0.6));
+  }
+  const emberGeo = new THREE.BufferGeometry();
+  emberGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const emberMat = new THREE.PointsMaterial({ color: 0x666666, size: 0.06, transparent: true, opacity: 0.9 });
+  const embers = new THREE.Points(emberGeo, emberMat);
+  group.add(embers);
+
+  ashesFireEffects.push({ group, flames, embers, velocities, t: 0, duration: 1.8 });
+  sfxThunder(); // hazırda "boom"-a bənzər tək səs generatoru var; original, copyright-safe
+}
+
+function updateAshesFireEffects(dt) {
+  for (let i = ashesFireEffects.length - 1; i >= 0; i--) {
+    const fx = ashesFireEffects[i];
+    fx.t += dt;
+    const p = fx.t / fx.duration;
+    fx.flames.forEach((f) => {
+      f.position.y += dt * 1.2;
+      f.scale.multiplyScalar(1 - dt * 0.5);
+      f.material.opacity = Math.max(0, 1 - p * 1.4);
+    });
+    const posAttr = fx.embers.geometry.attributes.position;
+    for (let j = 0; j < fx.velocities.length; j++) {
+      posAttr.array[j*3] += fx.velocities[j].x * dt;
+      posAttr.array[j*3+1] += fx.velocities[j].y * dt;
+      posAttr.array[j*3+2] += fx.velocities[j].z * dt;
+      fx.velocities[j].y -= dt * 0.6;
+    }
+    posAttr.needsUpdate = true;
+    fx.embers.material.opacity = Math.max(0, 1 - p);
+    if (fx.t >= fx.duration) {
+      disposeAshesEffect(fx); // scene + GPU təmizliyi - yaddaş sızması olmasın
+      ashesFireEffects.splice(i, 1);
+    }
+  }
+}
+
+// ---------- EMOTE (uzaqdan görünən) ----------
+function showRemoteEmote(token, text) {
+  if (!text) return;
+  const targetMesh = token === myId ? camera : (remotePlayers[token] && remotePlayers[token].mesh);
+  if (!targetMesh) return;
+  const c = document.createElement('canvas'); c.width = 256; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.roundRect ? ctx.roundRect(0,0,256,64,12) : ctx.rect(0,0,256,64); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(text.slice(0, 18), 128, 40);
+  const tex = new THREE.CanvasTexture(c);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(1.6, 0.4, 1);
+  sprite.position.set(0, 2.1, 0);
+  targetMesh.add(sprite);
+  setTimeout(() => targetMesh.remove(sprite), 2200);
+}
+function sendEmote() {
+  if (!ws || ws.readyState !== WebSocket.OPEN || stunned) return;
+  ws.send(JSON.stringify({ type: 'emote_trigger' }));
+}
+
+// ---------- JOJO GİZLİ REFERANSI (bütün xəritələrdə sabit koordinatda) ----------
+const JOJO_SECRET_POS = new THREE.Vector3(34, 0, -34);
+let jojoSecretObj = null;
+function spawnJojoSecret() {
+  const group = new THREE.Group();
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf4c400 });
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+  const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.9, 1), bodyMat);
+  body.position.y = 0.8;
+  const roller = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.1, 16), bodyMat);
+  roller.rotation.z = Math.PI / 2;
+  roller.position.set(-1.1, 0.55, 0);
+  const wheel1 = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 1.05, 12), wheelMat);
+  wheel1.rotation.z = Math.PI / 2; wheel1.position.set(0.7, 0.3, 0);
+  const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1), bodyMat);
+  flagPole.position.set(0.3, 1.6, 0);
+  const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.3), new THREE.MeshBasicMaterial({ color: 0xffe100, side: THREE.DoubleSide }));
+  flag.position.set(0.55, 1.95, 0);
+  group.add(body, roller, wheel1, flagPole, flag);
+  group.position.copy(JOJO_SECRET_POS);
+  group.position.y = 0;
+  scene.add(group);
+  jojoSecretObj = group;
+}
+
+
+// Logical Mjolnir = cosmetic/effect id 'thunderHammer' (server COSMETICS.thunderHammer.model points at the same file).
+// NEW Mjolnir replaces the old thor.obj: same logical id, new asset. Placement below keeps the old on-screen size (~8.4 units long),
+// orientation (head up / handle down, spin about the long axis) and a centred pivot. The source MTL/textures are MISSING, so the
+// material is an explicit neutral metal fallback (NOT the original look).
+const MJOLNIR_MODEL = { path: 'models/thor/mjolnir.obj', scale: 0.75, rotZ: -Math.PI / 2, material: { color: 0x9aa0ad, metalness: 0.85, roughness: 0.35 } };
+function ensureThorHammer(cb) {
+  if (thorHammerModel) { cb(thorHammerModel); return; }
+  objLoader.load(MJOLNIR_MODEL.path, (obj) => {
+    const mat = new THREE.MeshStandardMaterial(MJOLNIR_MODEL.material);
+    mat.emissive = new THREE.Color(0x6ab8ff); mat.emissiveIntensity = 0; thorHammerMat = mat; // dark until lightning strikes (see startThorLightning)
+    applyMetalEnv(mat, 1.0);
+    obj.traverse((child) => { if (child.isMesh) child.material = mat; });
+    obj.rotation.z = MJOLNIR_MODEL.rotZ;
+    obj.updateMatrixWorld(true);
+    obj.position.sub(new THREE.Box3().setFromObject(obj).getCenter(new THREE.Vector3())); // centred pivot
+    const pivot = new THREE.Group(); // callers only use position / rotation.y / visible, which a Group supports
+    pivot.add(obj);
+    pivot.scale.setScalar(MJOLNIR_MODEL.scale);
+    pivot.visible = false;
+    scene.add(pivot);
+    thorHammerModel = pivot;
+    cb(pivot);
+  }, undefined, () => {});
+}
+
+function flashLightning() {
+  const el = document.getElementById('lightning');
+  el.style.transition = 'none';
+  el.style.opacity = '0.85';
+  requestAnimationFrame(() => {
+    el.style.transition = 'opacity 0.5s ease-out';
+    el.style.opacity = '0';
+  });
+}
+
+// çəkicin ətrafında qığılcım/ildırım qövsləri (sadə zigzaq xətlər)
+function spawnLightningArc(origin) {
+  const points = [];
+  let cur = origin.clone();
+  points.push(cur.clone());
+  for (let i=0;i<5;i++) {
+    cur = cur.clone().add(new THREE.Vector3((Math.random()-0.5)*0.7, (Math.random()-0.5)*0.7, (Math.random()-0.5)*0.7));
+    points.push(cur);
+  }
+  const geo = new THREE.BufferGeometry().setFromPoints(points);
+  const mat = new THREE.LineBasicMaterial({ color: 0x9fd8ff });
+  const line = new THREE.Line(geo, mat);
+  scene.add(line);
+  setTimeout(() => scene.remove(line), 110);
+}
+
+function startThorLightning(getPos) {
+  if (!thorLight) {
+    thorLight = new THREE.PointLight(0xaee4ff, 2, 8);
+    scene.add(thorLight);
+  }
+  thorLight.visible = true;
+  stopThorLightning();
+  thorLightningTimer = setInterval(() => {
+    const p = getPos();
+    if (!p) return;
+    thorLight.position.copy(p);
+    thorLight.intensity = 1.2 + Math.random()*2;
+    if (thorHammerMat) thorHammerMat.emissiveIntensity = 0.3 + Math.random() * 0.9; // the hammer itself flickers with the strikes
+    if (Math.random() < 0.7) spawnLightningArc(p);
+  }, 130);
+}
+
+function stopThorLightning() {
+  if (thorLightningTimer) { clearInterval(thorLightningTimer); thorLightningTimer = null; }
+  if (thorHammerMat) thorHammerMat.emissiveIntensity = 0;
+}
+
+function sfxThunder() {
+  const dur = 0.6;
+  const bufferSize = Math.floor(actx.sampleRate * dur);
+  const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/bufferSize, 2);
+  const noise = actx.createBufferSource();
+  noise.buffer = buffer;
+  const filter = actx.createBiquadFilter();
+  filter.type = 'lowpass'; filter.frequency.value = 500;
+  const gain = actx.createGain();
+  gain.gain.setValueAtTime(0.5, actx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+  noise.connect(filter); filter.connect(gain); gain.connect(actx.destination);
+  noise.start();
+}
+
+function makeFallbackMemeTexture() {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 256;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff59d'; ctx.fillRect(0,0,256,256);
+  ctx.fillStyle = '#000'; ctx.font = 'bold 20px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('☀️ You Are', 128, 100);
+  ctx.fillText('My Sunshine', 128, 130);
+  ctx.font = '14px sans-serif';
+  ctx.fillText('(öz meme.png-ni qoy)', 128, 170);
+  return new THREE.CanvasTexture(c);
+}
+
+function spawnMemeQuad(x, y, z) {
+  const build = (tex) => {
+    const geo = new THREE.PlaneGeometry(1.2, 1.2);
+    const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide });
+    const quad = new THREE.Mesh(geo, mat);
+    quad.position.set(x, y, z);
+    scene.add(quad);
+    memeQuads.push({ mesh: quad, life: 5.5 });
+  };
+  texLoader.load('meme/meme.jpg', build, undefined, () => build(makeFallbackMemeTexture()));
+}
+
+// ---------- DEATH VOICES ----------
+// No audio ships with the game. Files the owner drops into public/sfx/death/ (listed by manifest.json, see tools/build_death_manifest.js) play when a
+// player dies: your own death at full volume, other players' deaths fading with distance. No files = silence, nothing else changes.
+const DEATH_VOICE_RANGE = 40, DEATH_VOICE_GAIN = 0.9;
+const deathVoice = { names: [], last: -1 }; // sample names registered in SAMPLES (playback goes through the one audio manager below)
+function pickDeathVoiceIndex(n, last, rnd) {
+  if (!(n > 0)) return -1;
+  if (n === 1) return 0;
+  let i = Math.min(n - 1, Math.floor(rnd() * n));
+  if (i === last) i = (i + 1) % n; // never the same voice twice in a row
+  return i;
+}
+function deathVoiceVolumeMul(isMine, dist) { if (isMine) return 1; return dist >= 0 ? Math.max(0, 1 - dist / DEATH_VOICE_RANGE) : 0; }
+function loadDeathVoiceManifest() {
+  try {
+    fetch('sfx/death/manifest.json').then((r) => (r.ok ? r.json() : null)).then((j) => {
+      if (!j || !Array.isArray(j.files)) return;
+      deathVoice.names = [];
+      for (const f of j.files) {
+        if (typeof f !== 'string' || !/^[A-Za-z0-9_.\-]+\.(wav|mp3|ogg)$/.test(f)) continue;
+        const name = 'death:' + f; SAMPLES[name] = { src: 'sfx/death/' + f, bus: 'sfx', gain: DEATH_VOICE_GAIN }; deathVoice.names.push(name);
+      }
+    }).catch(() => {});
+  } catch (e) {}
+}
+function playDeathVoice(victimId, x, z) {
+  try {
+    const i = pickDeathVoiceIndex(deathVoice.names.length, deathVoice.last, Math.random); if (i < 0) return;
+    const mine = victimId === myId;
+    const mul = deathVoiceVolumeMul(mine, mine ? 0 : Math.hypot(camera.position.x - x, camera.position.z - z));
+    if (!(mul > 0)) return;
+    deathVoice.last = i;
+    playSample(deathVoice.names[i], mul); // volume = Master x SFX x gain x distance; missing/blocked file -> silent
+  } catch (e) {}
+}
+loadDeathVoiceManifest();
+
+// ---------- SAMPLE AUDIO MANAGER ----------
+// One place for every recorded sound file. Files live in public/sfx (effects)
+// and public/meme (music). Each is preloaded and "unlocked" on the first user
+// gesture (required by iOS/Android/Chrome autoplay rules), then played via
+// clones so overlapping plays work with no load lag. Volume = Master x bus
+// (sfx|music) x per-sample gain, all from Settings.
+const SAMPLES = {
+  thorWhoosh: { src: 'sfx/thor_whoosh.wav',        bus: 'sfx',   gain: 1.0 },
+  roadRoller: { src: 'sfx/jojo_road_roller.wav',   bus: 'sfx',   gain: 0.7 },
+  sunshine:   { src: 'meme/sunshine.mp3',          bus: 'music', gain: 0.6 },
+};
+const sampleBase = {};
+function sampleAudio(name) {
+  const def = SAMPLES[name]; if (!def) return null;
+  if (!sampleBase[name]) { const a = new Audio(def.src); a.preload = 'auto'; sampleBase[name] = a; }
+  return sampleBase[name];
+}
+function sampleVolume(name, mul) {
+  const def = SAMPLES[name];
+  const bus = def.bus === 'music' ? settings.musicVolume : settings.sfxVolume;
+  return Math.min(1, def.gain * (mul || 1) * (settings.masterVolume / 100) * (bus / 100));
+}
+function playSample(name, mul) {
+  try {
+    const base = sampleAudio(name); if (!base) return;
+    const vol = sampleVolume(name, mul);
+    if (vol <= 0) return;
+    const a = base.cloneNode(); a.volume = vol;
+    a.play().catch(() => {}); // missing file / blocked -> silent, game unaffected
+  } catch (e) {}
+}
+let audioUnlocked = false;
+function unlockAudioOnce() {
+  if (audioUnlocked) return;
+  audioUnlocked = true;
+  try { if (actx.state === 'suspended') actx.resume(); } catch (e) {}
+  for (const name of Object.keys(SAMPLES)) {
+    try {
+      const a = sampleAudio(name).cloneNode(); a.muted = true;
+      const pr = a.play();
+      if (pr && pr.then) pr.then(() => { a.pause(); }).catch(() => {});
+    } catch (e) {}
+  }
+}
+['pointerdown', 'touchstart', 'keydown', 'click'].forEach(ev =>
+  document.addEventListener(ev, unlockAudioOnce, { once: false, passive: true }));
+
+function playMemeAudio() { playSample('sunshine'); }
+function playJojoSfx() { playSample('roadRoller'); }
+function playThorWhoosh(mul) { playSample('thorWhoosh', mul); }
+
+// Faza 1: çəkic göydən SÜRƏTLƏ gəlib oyunçunun qarşısında dayanır (hover)
+function triggerThorEvent(x, y, z, ry, isMe) {
+  const fwdX = x - Math.sin(ry || 0) * 2.2;
+  const fwdZ = z - Math.cos(ry || 0) * 2.2;
+  const hoverPos = new THREE.Vector3(fwdX, y + 0.7, fwdZ);
+
+  ensureThorHammer((hammer) => {
+    hammer.visible = true;
+    hammer.position.set(fwdX, y + 40, fwdZ);
+    thorAnim = {
+      hammer,
+      start: hammer.position.clone(),
+      end: hoverPos.clone(),
+      t: 0, duration: 0.35, mode: 'arrive',
+    };
+    startThorLightning(() => thorAnim ? thorAnim.hammer.position : hoverPos);
+  });
+  flashLightning();
+  sfxThunder();
+  playThorWhoosh(0.7); // hammer descending
+  spawnMemeQuad(fwdX, y + 1.9, fwdZ);
+  playMemeAudio();
+  addKillFeed(isMe ? '⚡ Thor səni seçdi! ⚡' : '⚡ Thor göydən endi! ⚡');
+}
+
+// Faza 2: 5-6 saniyə sonra oyunçunun HAZIRKI mövqeyinə ani/sürətli zərbə
+function triggerThorStrike(x, y, z) {
+  if (!thorHammerModel) return;
+  const target = new THREE.Vector3(x, y + 0.9, z);
+  thorAnim = {
+    hammer: thorHammerModel,
+    start: thorHammerModel.position.clone(),
+    end: target,
+    t: 0, duration: 0.18, mode: 'strike',
+  };
+  flashLightning();
+  sfxThunder();
+  playThorWhoosh(1.0); // heavy swing
+}
+
+// ---------- NOKAUT (Thor çəkici ilə vurulanda) ----------
+let stunned = false, stunUntil = 0, stunDuration = 10000, fallenBody = null, stunnedOrigin = null;
+
+// ---------- DASH / STAMINA (client) ----------
+let dashUntil = 0, dashDir = new THREE.Vector3(1,0,0), dashReady = true;
+let duckWeaponActive = false, pinkPopActive = false;
+const chaosSprites = {}; // token -> THREE.Sprite (🦆 üçün)
+const ogreOriginal = {}; // token -> {scale, color} bərpa üçün
+
+function sfxDash() { playTone(500, 900, 0.15, 'sine', 0.12); }
+function sfxQuack() { playTone(700, 300, 0.18, 'square', 0.18); setTimeout(()=>playTone(650,280,0.15,'square',0.15), 120); }
+function sfxPop() {
+  [660, 880, 990].forEach((f, i) => setTimeout(() => playTone(f, f, 0.12, 'square', 0.08), i * 90));
+}
+
+function requestDash() {
+  if (stunned || !ws || ws.readyState !== WebSocket.OPEN) return;
+  const camFwd = new THREE.Vector3();
+  camera.getWorldDirection(camFwd);
+  camFwd.y = 0; camFwd.normalize();
+  pendingDashDir = camFwd.clone();
+  ws.send(JSON.stringify({ type: 'dash_request', dir: [camFwd.x, camFwd.z] }));
+}
+let pendingDashDir = new THREE.Vector3(0,0,-1);
+
+document.getElementById('dashBtn').addEventListener('click', requestDash);
+document.getElementById('dashBtn').addEventListener('touchstart', (e) => { e.preventDefault(); requestDash(); });
+
+function updateStaminaUI(stamina, ready) {
+  document.getElementById('staminafill').style.width = Math.max(0, stamina) + '%';
+  document.getElementById('dashBtn').classList.toggle('disabled', !ready || stamina < 35);
+  dashReady = ready;
+}
+
+function shakeStaminaBar() {
+  const bar = document.getElementById('staminabar');
+  bar.classList.remove('shake'); void bar.offsetWidth; bar.classList.add('shake');
+}
+
+function showChaosBanner(text) {
+  const el = document.getElementById('chaosBanner');
+  el.textContent = text;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function spawnDuckSprite(token) {
+  if (!remotePlayers[token] || chaosSprites[token]) return;
+  const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+  const ctx = c.getContext('2d');
+  ctx.font = '48px serif'; ctx.textAlign = 'center'; ctx.fillText('🦆', 32, 46);
+  const tex = new THREE.CanvasTexture(c);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(0.6, 0.6, 0.6);
+  sprite.position.set(0, 1.3, 0);
+  remotePlayers[token].mesh.add(sprite);
+  chaosSprites[token] = sprite;
+}
+function removeChaosSprite(token) {
+  if (chaosSprites[token] && remotePlayers[token]) {
+    remotePlayers[token].mesh.remove(chaosSprites[token]);
+  }
+  delete chaosSprites[token];
+}
+
+function applyOgreVisual(token) {
+  if (!remotePlayers[token]) return;
+  const mesh = remotePlayers[token].mesh;
+  ogreOriginal[token] = { scale: mesh.scale.x, color: mesh.material.color.getHex() };
+  mesh.scale.setScalar(1.8);
+  mesh.material.color.set(0x2ecc40); tintBodyModel(token, remotePlayers[token]);
+}
+function revertOgreVisual(token) {
+  if (!remotePlayers[token] || !ogreOriginal[token]) return;
+  remotePlayers[token].mesh.scale.setScalar(ogreOriginal[token].scale);
+  delete ogreOriginal[token]; tintBodyModel(token, remotePlayers[token]);
+}
+
+function spawnDashTrail(token) {
+  if (!remotePlayers[token]) return;
+  const geo = new THREE.RingGeometry(0.3, 0.5, 16);
+  const mat = new THREE.MeshBasicMaterial({ color: 0x9fe8ff, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+  const ring = new THREE.Mesh(geo, mat);
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.copy(remotePlayers[token].mesh.position);
+  ring.position.y = 0.1;
+  scene.add(ring);
+  let t = 0;
+  const step = () => {
+    t += 0.05;
+    ring.scale.setScalar(1 + t * 3);
+    mat.opacity = Math.max(0, 0.8 - t * 2);
+    if (t < 0.4) requestAnimationFrame(step); else scene.remove(ring);
+  };
+  step();
+}
+
+// ---------- CHAOS SYNC (Phase 8) ----------
+// The server includes the active event in room_state / room_rejoined
+// (with remainingMs, not an absolute timestamp). A client that reconnects or
+// missed the start message replays the same start/end handlers, so it
+// converges on the server's state instead of desyncing.
+let activeChaos = null; // {id, targetId}
+function syncChaosFromRoomState(chaos) {
+  if (chaos && (!activeChaos || activeChaos.id !== chaos.id)) {
+    handleChaosEvent({ id: chaos.id, displayName: chaos.displayName, scope: chaos.scope, targetId: chaos.targetId, duration: chaos.remainingMs });
+  } else if (!chaos && activeChaos) {
+    handleChaosEventEnd({ id: activeChaos.id, targetId: activeChaos.targetId });
+  }
+}
+
+
+// ---------- Weapon slots: gun (the 13 weapon models) -> knife -> bomb ----------
+// The SERVER owns the slot. The box and keys 1/2/3 only REQUEST it (select_slot); the box changes only on slot_ok / the server's state tick.
+// Numbers below MIRROR server KNIFE_CONFIG / BOMB_CONFIG (design values; a test pins them equal). Damage/range/cooldown are always re-checked by the server.
+const SLOT_KEYS = { Digit1: 'gun', Digit2: 'knife', Digit3: 'bomb' };
+const KNIFE_RANGE = 2.8, KNIFE_COOLDOWN_MS = 650, BOMB_COOLDOWN_MS = 5000;
+let mySlot = 'gun', lastKnifeLocalAt = 0, bombReadyAt = 0;
+const viewItems = {}; // 'knife' | 'bomb' -> Group parented to the camera, shown only while that slot is selected
+const GRENADE_PALETTE = { pCube5SG: 0x363636, pCube5SG1: 0x001700, pCube5SG2: 0x808080 }; // = Grenade.mtl Kd (0.21 / 0.00,0.09,0.00 / 0.50), the only real colour data
+let bombProto = null;
+function selectSlot(slot) {
+  if (!ws || ws.readyState !== 1 || isDead || stunned) return;
+  ws.send(JSON.stringify({ type: 'select_slot', slot }));
+}
+function applySlot(slot) {
+  if (slot !== 'gun' && slot !== 'knife' && slot !== 'bomb') return;
+  mySlot = slot;
+  document.querySelectorAll('#slotBox .slotBtn').forEach((b) => b.classList.toggle('active', b.dataset.slot === slot));
+  if (viewGun) viewGun.visible = slot === 'gun';
+  for (const k in viewItems) viewItems[k].visible = k === slot;
+  if (slot !== 'gun') ensureViewItem(slot);
+}
+function ensureViewItem(kind) {
+  if (viewItems[kind] || !camera) return;
+  const holder = new THREE.Group(); holder.visible = (mySlot === kind); viewItems[kind] = holder; camera.add(holder);
+  const url = kind === 'knife' ? 'models/weapons/melee/knife/knife.obj' : 'models/weapons/throwable/grenade/Grenade.obj';
+  loadObjShared(url, (obj) => {
+    if (viewItems[kind] !== holder) { disposeObject3D(obj); return; }
+    obj.traverse((ch) => { if (!ch.isMesh) return; const nm = ch.material && ch.material.name;
+      ch.material = kind === 'knife' ? new THREE.MeshStandardMaterial({ color: 0xb8bcc4, metalness: 0.85, roughness: 0.3 }) // the knife's source texture is missing: neutral steel
+        : new THREE.MeshStandardMaterial({ color: GRENADE_PALETTE[nm] !== undefined ? GRENADE_PALETTE[nm] : 0x808080, metalness: 0.3, roughness: 0.6 }); });
+    obj.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(obj); obj.position.sub(box.getCenter(new THREE.Vector3()));
+    const size = box.getSize(new THREE.Vector3()); const inner = new THREE.Group(); inner.add(obj);
+    inner.scale.setScalar((kind === 'knife' ? 0.5 / Math.max(size.x, size.y, size.z) : 0.22 / Math.max(size.x, size.y, size.z))); // knife 0.5 long, bomb 0.22 tall
+    holder.add(inner);
+    if (kind === 'knife') { holder.position.set(0.26, -0.28, -0.5); holder.rotation.set(-0.35, 0, 0.5); }  // blade tip is the -Z end of the source mesh = forward
+    else { holder.position.set(0.24, -0.3, -0.45); holder.rotation.set(0, 0, 0); }
+  }, () => { if (viewItems[kind] === holder) { camera.remove(holder); delete viewItems[kind]; } });
+}
+function updateViewItems(dt) {
+  const k = viewItems.knife; if (k && k.userData.slash > 0) { k.userData.slash = Math.max(0, k.userData.slash - dt * 5); k.rotation.x = -0.35 - Math.sin(k.userData.slash * Math.PI) * 1.1; k.position.z = -0.5 - Math.sin(k.userData.slash * Math.PI) * 0.25; }
+  const cd = document.getElementById('bombCd'); if (cd) { const rem = Math.max(0, bombReadyAt - performance.now()); cd.style.height = (Math.min(1, rem / BOMB_COOLDOWN_MS) * 100) + '%'; }
+}
+function fireKnife() {
+  const now = performance.now(); if (now - lastKnifeLocalAt < KNIFE_COOLDOWN_MS) return; lastKnifeLocalAt = now;
+  playTone(500, 150, 0.08, 'sawtooth', 0.1); if (viewItems.knife) viewItems.knife.userData.slash = 1;
+  const aimOrigin = camera.position.toArray(), aimDir = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).toArray();
+  ws.send(JSON.stringify({ type: 'shoot', origin: aimOrigin, dir: aimDir }));
+  const rc = new THREE.Raycaster(); rc.setFromCamera({ x: 0, y: 0 }, camera); const picked = pickRemoteTarget(rc, KNIFE_RANGE);
+  if (picked && picked.id) ws.send(JSON.stringify({ type: 'hit', targetId: picked.id, origin: aimOrigin, dir: aimDir }));
+}
+function fireBomb() {
+  if (performance.now() < bombReadyAt) return; // the server enforces the real cooldown; this just avoids pointless sends
+  const aimOrigin = camera.position.toArray(), aimDir = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).toArray();
+  ws.send(JSON.stringify({ type: 'shoot', origin: aimOrigin, dir: aimDir })); // the server turns a shoot in the bomb slot into a thrown bomb
+}
+document.querySelectorAll('#slotBox .slotBtn').forEach((b) => b.addEventListener('pointerdown', (e) => { e.preventDefault(); selectSlot(b.dataset.slot); }));
+
+// Bomb meshes reuse the banana projectile list on the server and addBananaMesh/removeBananaMesh here (one engine). The explosion is a PROCEDURAL effect
+// (the supplied explosion.c4d is a volumetric simulation and cannot be imported). It only draws; damage was already decided by the server.
+const explosionFx = [];
+function makeBombMesh() {
+  if (!bombProto) { return new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), new THREE.MeshStandardMaterial({ color: 0x363636, metalness: 0.3, roughness: 0.6 })); } // until the grenade file has loaded once
+  const g = bombProto.clone(true); g.traverse((ch) => { if (ch.isMesh) ch.material = ch.material.clone(); }); return g; // geometry stays shared (flagged: disposeObject3D never frees it)
+}
+function loadBombProto() {
+  if (bombProto) return;
+  loadObjShared('models/weapons/throwable/grenade/Grenade.obj', (obj) => {
+    obj.traverse((ch) => { if (ch.isMesh) ch.material = new THREE.MeshStandardMaterial({ color: GRENADE_PALETTE[ch.material && ch.material.name] !== undefined ? GRENADE_PALETTE[ch.material.name] : 0x808080, metalness: 0.3, roughness: 0.6 }); });
+    obj.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(obj); obj.position.sub(box.getCenter(new THREE.Vector3()));
+    const wrap = new THREE.Group(); wrap.add(obj); wrap.scale.setScalar(0.24 / Math.max(...box.getSize(new THREE.Vector3()).toArray())); bombProto = wrap;
+  }, () => {});
+}
+function spawnExplosionEffect(x, y, z, radius) {
+  const budget = window.BBFeedback.ashesBudget(settings.particleQuality, IS_TOUCH_DEVICE); // same quality/mobile tiers as the other particle effects
+  while (explosionFx.length >= Math.max(1, budget.maxConcurrent)) { const old = explosionFx.shift(); scene.remove(old.group); disposeObject3D(old.group); }
+  const group = new THREE.Group(); group.position.set(x, y, z); scene.add(group);
+  const core = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 10), new THREE.MeshBasicMaterial({ color: 0xffa020, transparent: true, opacity: 0.95 })); group.add(core);
+  const puffs = [], embers = [];
+  for (let i = 0; i < budget.flames; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 6), new THREE.MeshBasicMaterial({ color: 0x2b2b2b, transparent: true, opacity: 0.8 })); const a = Math.random() * Math.PI * 2, r = Math.random() * radius * 0.4; m.position.set(Math.cos(a) * r, 0.2, Math.sin(a) * r); group.add(m); puffs.push({ m, vy: 0.8 + Math.random() * 0.8 }); }
+  for (let i = 0; i < budget.embers; i++) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.08), new THREE.MeshBasicMaterial({ color: 0xffd34a, transparent: true, opacity: 1 })); group.add(m); const a = Math.random() * Math.PI * 2; embers.push({ m, vx: Math.cos(a) * (2 + Math.random() * 4), vz: Math.sin(a) * (2 + Math.random() * 4), vy: 2 + Math.random() * 4 }); }
+  explosionFx.push({ group, core, puffs, embers, t: 0, radius });
+  const d = Math.hypot(x - camera.position.x, z - camera.position.z); playTone(140, 35, 0.55, 'sawtooth', 0.35 * Math.max(0.15, 1 - d / 40)); setTimeout(() => playTone(70, 30, 0.5, 'square', 0.25 * Math.max(0.15, 1 - d / 40)), 60);
+}
+function updateExplosions(dt) {
+  for (let i = explosionFx.length - 1; i >= 0; i--) {
+    const f = explosionFx[i]; f.t += dt; const k = f.t / 0.9;
+    if (k >= 1) { scene.remove(f.group); disposeObject3D(f.group); explosionFx.splice(i, 1); continue; }
+    const grow = Math.min(1, f.t / 0.3); f.core.scale.setScalar(Math.max(0.01, f.radius * 0.8 * grow)); f.core.material.opacity = Math.max(0, 0.95 * (1 - f.t / 0.45));
+    for (const p of f.puffs) { p.m.position.y += p.vy * dt; p.m.scale.setScalar(1 + k * 2.5); p.m.material.opacity = 0.8 * (1 - k); }
+    for (const e of f.embers) { e.vy -= 12 * dt; e.m.position.x += e.vx * dt; e.m.position.y += e.vy * dt; e.m.position.z += e.vz * dt; e.m.material.opacity = 1 - k; }
+  }
+}
+function handleSlotAndBombMessage(msg) {
+  if (msg.type === 'slot_ok') applySlot(msg.slot);
+  else if (msg.type === 'slot_rejected') { if (msg.reason === 'COOLDOWN') return; showToast('Silah dəyişmək olmur (' + String(msg.reason) + ')', 1200); }
+  else if (msg.type === 'bomb_ok') bombReadyAt = performance.now() + (Number(msg.cooldownMs) || BOMB_COOLDOWN_MS);
+  else if (msg.type === 'bomb_rejected') { if (msg.reason === 'COOLDOWN') bombReadyAt = performance.now() + (Number(msg.remainingMs) || 0); }
+  else if (msg.type === 'bomb_spawn') addBananaMesh({ bananaId: msg.bombId, kind: 'bomb', position: msg.position, velocity: msg.velocity, rotSpeed: 6 }, 'flying');
+  else if (msg.type === 'bomb_landed') { const e = bananaMeshes[msg.bombId]; if (e && Array.isArray(msg.position)) { e.state = 'landed'; e.vel = [0, 0, 0]; e.mesh.position.set(msg.position[0], 0.12, msg.position[2]); e.mesh.rotation.set(0, 0, 0); } }
+  else if (msg.type === 'bomb_exploded') { removeBananaMesh(msg.bombId); if (Array.isArray(msg.position)) spawnExplosionEffect(msg.position[0], msg.position[1], msg.position[2], Number(msg.radius) || 5); }
+}
+
+// ---------- 🍌 Banana Weapon Chaos (client view of SERVER state) ----------
+// The server owns spawn/landing/collision/slip. The client only renders: it integrates a flying banana locally with the
+// same gravity for smoothness and snaps to the server position on landing. Chaos Effects OFF never hides this: it is gameplay info.
+const bananaMeshes = {}; // bananaId -> { mesh, vel:[x,y,z], state, rot }
+let bananaHolder = false;
+const BANANA_G = 22;
+function cleanName(n) { return String(n == null ? '' : n).replace(/[<>&"'`]/g, '').slice(0, 20) || 'Bəndə'; }
+function makeBananaMesh() {
+  const g = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.07, 6, 10, Math.PI * 1.2), new THREE.MeshStandardMaterial({ color: 0xf7d51d }));
+  g.castShadow = false; return g;
+}
+function addBananaMesh(b, state) {
+  if (!scene || !b || typeof b.bananaId !== 'string' || bananaMeshes[b.bananaId] || !Array.isArray(b.position)) return;
+  const mesh = b.kind === 'bomb' ? makeBombMesh() : makeBananaMesh(); mesh.position.set(b.position[0], b.position[1], b.position[2]);
+  if (state === 'peel') { mesh.rotation.x = -Math.PI / 2; mesh.position.y = 0.06; }
+  if (state === 'landed') mesh.position.y = 0.12;
+  scene.add(mesh);
+  bananaMeshes[b.bananaId] = { mesh, vel: Array.isArray(b.velocity) ? b.velocity.slice(0, 3) : [0, 0, 0], state: state || 'flying', rot: typeof b.rotSpeed === 'number' ? Math.min(20, Math.max(0, b.rotSpeed)) : 9 };
+}
+function removeBananaMesh(id) {
+  const e = bananaMeshes[id]; if (!e) return;
+  if (scene) scene.remove(e.mesh);
+  disposeObject3D(e.mesh); // works for the single banana mesh and for the bomb Group
+  delete bananaMeshes[id];
+}
+function clearBananaMeshes() { for (const id of Object.keys(bananaMeshes)) removeBananaMesh(id); }
+function syncBananas(list) { // reconnect / late join: rebuild from the server's snapshot
+  clearBananaMeshes();
+  if (Array.isArray(list)) for (const b of list.slice(0, 32)) addBananaMesh(b, b && b.state);
+}
+function updateBananas(dt) {
+  for (const id in bananaMeshes) {
+    const e = bananaMeshes[id]; if (e.state !== 'flying') continue;
+    e.vel[1] -= BANANA_G * dt;
+    e.mesh.position.x += e.vel[0] * dt; e.mesh.position.y += e.vel[1] * dt; e.mesh.position.z += e.vel[2] * dt;
+    e.mesh.rotation.z += e.rot * dt;
+    if (e.mesh.position.y < 0.05) e.mesh.position.y = 0.05; // wait for the server's banana_landed to switch state
+  }
+}
+function handleBananaMessage(msg) {
+  if (msg.type === 'banana_spawn') addBananaMesh(msg, 'flying');
+  else if (msg.type === 'banana_landed') {
+    const e = bananaMeshes[msg.bananaId];
+    if (e && Array.isArray(msg.position)) { e.state = 'peel'; e.vel = [0, 0, 0]; e.mesh.position.set(msg.position[0], 0.06, msg.position[2]); e.mesh.rotation.set(-Math.PI / 2, 0, 0); }
+  } else if (msg.type === 'banana_removed') removeBananaMesh(msg.bananaId);
+  else if (msg.type === 'banana_slipped') {
+    if (msg.id === myId) {
+      showToast('You got slapped by ' + cleanName(msg.ownerUsername) + ' 🍌', 3000); // textContent: no markup can execute
+      if (!stunned && !isDead) startKnockdown(msg.durationMs);
+    } else if (remotePlayers[msg.id] && remotePlayers[msg.id].mesh) remotePlayers[msg.id].mesh.rotation.z = Math.PI / 2; // lying down
+  } else if (msg.type === 'banana_recovered') {
+    if (msg.id === myId) { if (stunned) endKnockdown(); }
+    else if (remotePlayers[msg.id] && remotePlayers[msg.id].mesh) remotePlayers[msg.id].mesh.rotation.z = 0;
+  }
+}
+
+function handleChaosEvent(msg) {
+  activeChaos = { id: msg.id, targetId: msg.targetId || null };
+  // chaosEffects only gates the cosmetic flair (banner/tint/color/particles).
+  // Gameplay-relevant state (pinkPopActive/duckWeaponActive) and the
+  // addKillFeed heads-up text always fire — a player needs to know their
+  // weapon quacks now even with effects turned off; that's information, not
+  // decoration.
+  const fx = settings.chaosEffects;
+  if (msg.id === 'pinkPop') {
+    pinkPopActive = true;
+    if (fx) {
+      showChaosBanner('🎀 CHAOS EVENT! 🎀');
+      sfxPop();
+      document.getElementById('pinkOverlay').style.opacity = '1';
+      for (const id in remotePlayers) { remotePlayers[id].mesh.material.color.set(0xff8fd6); tintBodyModel(id, remotePlayers[id]); }
+      if (viewGun) viewGun.traverse((c) => { if (c.isMesh) { c.userData._origColor = c.userData._origColor || c.material.color.getHex(); c.material.color.set(0xff8fd6); } });
+    }
+  } else if (msg.id === 'duckWeapon') {
+    if (fx) showChaosBanner('🦆 DUCK WEAPON! 🦆');
+    if (msg.targetId === myId) { duckWeaponActive = true; addKillFeed('🦆 Silahın ördəyə çevrildi!'); }
+    else if (fx) spawnDuckSprite(msg.targetId);
+  } else if (msg.id === 'banana_weapon') {
+    if (fx) showChaosBanner('🍌 BANANA WEAPON! 🍌');
+    if (msg.targetId === myId) { bananaHolder = true; addKillFeed('🍌 Silahın banana oldu! Atəş = banana at'); }
+  } else if (msg.id === 'greenOgre') {
+    if (fx) showChaosBanner('👹 GREEN OGRE CHAOS! 👹');
+    if (msg.targetId === myId) addKillFeed('👹 Sən nəhəng Yaşıl Ogre-a çevrildin!');
+    else if (fx) applyOgreVisual(msg.targetId);
+  }
+}
+
+function handleChaosEventEnd(msg) {
+  if (activeChaos && activeChaos.id === msg.id) activeChaos = null;
+  const fx = settings.chaosEffects;
+  if (msg.id === 'pinkPop') {
+    pinkPopActive = false;
+    document.getElementById('pinkOverlay').style.opacity = '0';
+    for (const id in remotePlayers) { remotePlayers[id].mesh.material.color.set(teamColor(remotePlayers[id].team, remotePlayers[id].mode)); tintBodyModel(id, remotePlayers[id]); }
+    if (viewGun) viewGun.traverse((c) => { if (c.isMesh && c.userData._origColor !== undefined) c.material.color.set(c.userData._origColor); });
+  } else if (msg.id === 'duckWeapon') {
+    if (msg.targetId === myId) duckWeaponActive = false;
+    else if (fx) removeChaosSprite(msg.targetId);
+  } else if (msg.id === 'banana_weapon') {
+    if (msg.targetId === myId) bananaHolder = false;
+  } else if (msg.id === 'greenOgre') {
+    if (msg.targetId !== myId && fx) revertOgreVisual(msg.targetId);
+  }
+}
+
+let ringOsc = null, ringLfo = null, ringGain = null;
+
+function sfxRingStart() {
+  ringOsc = actx.createOscillator();
+  ringOsc.type = 'sine';
+  ringOsc.frequency.value = 2600;
+  ringGain = actx.createGain();
+  ringGain.gain.value = 0.06;
+  const lfo = actx.createOscillator();
+  lfo.frequency.value = 5;
+  const lfoGain = actx.createGain();
+  lfoGain.gain.value = 0.05;
+  lfo.connect(lfoGain);
+  lfoGain.connect(ringGain.gain);
+  ringOsc.connect(ringGain);
+  ringGain.connect(actx.destination);
+  ringOsc.start();
+  lfo.start();
+  ringLfo = lfo;
+}
+
+function sfxRingStop() {
+  if (ringOsc) { try { ringOsc.stop(); } catch(e) {} ringOsc = null; }
+  if (ringLfo) { try { ringLfo.stop(); } catch(e) {} ringLfo = null; }
+}
+
+function startKnockdown(durationMs) {
+  stunned = true;
+  stunDuration = (typeof durationMs === 'number' && durationMs >= 500 && durationMs <= 15000) ? durationMs : 10000; // Thor default 10 s; banana slip ~4 s
+  stunUntil = performance.now() + stunDuration;
+  stunnedOrigin = camera.position.clone();
+  if (viewGun) viewGun.visible = false;
+  stopThorLightning();
+  if (thorLight) thorLight.visible = false;
+
+  const geo = new THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.4, 1.2, 4, 8) : new THREE.BoxGeometry(0.8,1.8,0.8);
+  const mat = new THREE.MeshStandardMaterial({ color: 0xf1c40f });
+  fallenBody = new THREE.Mesh(geo, mat);
+  fallenBody.position.set(stunnedOrigin.x, 0.4, stunnedOrigin.z);
+  fallenBody.rotation.z = Math.PI/2;
+  fallenBody.rotation.y = Math.random() * Math.PI * 2;
+  scene.add(fallenBody);
+
+  document.getElementById('redflash').style.opacity = '1';
+  document.getElementById('punchtext').style.opacity = '1';
+  sfxRingStart();
+}
+
+function endKnockdown() {
+  stunned = false;
+  camera.up.set(0,1,0);
+  camera.position.set(stunnedOrigin.x, 1.6, stunnedOrigin.z);
+  if (viewGun) viewGun.visible = true;
+  if (fallenBody) { scene.remove(fallenBody); fallenBody = null; }
+  document.getElementById('redflash').style.opacity = '0';
+  document.getElementById('punchtext').style.opacity = '0';
+  sfxRingStop();
+}
+
+// ---------- FIXED HITBOX PROXIES ----------
+// Every remote player gets the SAME invisible head / torso / legs volumes (public/hitbox.js, shared with the server). Shots and knife swings are picked
+// against these, never against the skin or the capsule, so the hitbox is identical for every skin and animation. ?hitbox=1 draws them as wireframes.
+const HITBOX_DEBUG = /[?&]hitbox=1(&|$)/.test(location.search);
+const HITBOX_COLORS = { head: 0xff4040, torso: 0xffd040, legs: 0x40a0ff };
+function buildHitProxies(id, parent) {
+  const out = [];
+  for (const name of BBHitbox.ZONE_ORDER) {
+    const z = BBHitbox.ZONES[name];
+    const geo = z.kind === 'sphere' ? new THREE.SphereGeometry(z.r, 10, 8) : new THREE.CylinderGeometry(z.r, z.r, z.y1 - z.y0, 10);
+    const mat = HITBOX_DEBUG ? new THREE.MeshBasicMaterial({ color: HITBOX_COLORS[name], wireframe: true, transparent: true, opacity: 0.85 }) : new THREE.MeshBasicMaterial({ visible: false });
+    const m = new THREE.Mesh(geo, mat);
+    m.position.y = (z.kind === 'sphere' ? z.cy : (z.y0 + z.y1) / 2) - BBHitbox.EYE_HEIGHT; // the parent's origin is the EYE position
+    m.userData.ownerId = id; m.userData.zone = name;
+    parent.add(m); out.push(m);
+  }
+  return out;
+}
+function pickRemoteTarget(raycaster, maxDist) {
+  const list = [];
+  for (const id in remotePlayers) { const r = remotePlayers[id]; if (r.hitProxies) for (const m of r.hitProxies) list.push(m); }
+  const hits = raycaster.intersectObjects(list, false);
+  if (!hits.length || (maxDist && hits[0].distance > maxDist)) return null;
+  return { id: hits[0].object.userData.ownerId, zone: hits[0].object.userData.zone, distance: hits[0].distance };
+}
+
+function spawnRemote(id, p) {
+  const geo = new THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.4, 1.2, 4, 8) : new THREE.BoxGeometry(0.8,1.8,0.8);
+  const mat = new THREE.MeshStandardMaterial({ color: teamColor(p.team, p.mode) });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(p.x, p.y, p.z);
+  scene.add(mesh);
+  remotePlayers[id] = { mesh, targetPos: mesh.position.clone(), targetRy: p.ry, team: p.team, fallenUntil: 0 };
+  remotePlayers[id].hitProxies = buildHitProxies(id, mesh);
+  {
+    const t0 = (p.title && p.title !== 'titleNone' && cosmeticCatalog[p.title]) ? cosmeticCatalog[p.title].name : null;
+    const b0 = (p.badge && p.badge !== 'badgeNone' && cosmeticCatalog[p.badge] && cosmeticCatalog[p.badge].icon) ? cosmeticCatalog[p.badge].icon : null;
+    attachNameplate(id, p.name, t0, b0);
+  }
+}
+
+// ---------- NAMEPLATES (Phase 16) ----------
+// One persistent sprite per remote player, rebuilt only when name/title/badge
+// actually change (not every tick). Distance fades it out; spectating the
+// player makes it brighter/bigger so their name stands out.
+function nameplateCanvas(name, title, badgeIcon, emphasize) {
+  const c = document.createElement('canvas'); c.width = 320; c.height = 96;
+  const ctx = c.getContext('2d');
+  ctx.textAlign = 'center';
+  if (title) { ctx.fillStyle = emphasize ? '#ffd23b' : 'rgba(255,210,59,0.85)'; ctx.font = '600 20px sans-serif'; ctx.fillText(title.slice(0, 22), 160, 26); }
+  ctx.fillStyle = emphasize ? '#ffffff' : 'rgba(255,255,255,0.9)';
+  ctx.font = '800 30px sans-serif';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 6;
+  ctx.fillText(((badgeIcon ? badgeIcon + ' ' : '') + name).slice(0, 20), 160, 62);
+  return c;
+}
+function attachNameplate(id, name, title, badgeIcon) {
+  const r = remotePlayers[id]; if (!r) return;
+  if (r.nameSprite) { r.mesh.remove(r.nameSprite); r.nameSprite.material.map.dispose(); r.nameSprite.material.dispose(); }
+  const tex = new THREE.CanvasTexture(nameplateCanvas(name, title, badgeIcon || null, false));
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(1.8, 0.54, 1);
+  sprite.position.set(0, 2.35, 0);
+  sprite.renderOrder = 999;
+  r.mesh.add(sprite);
+  r.nameSprite = sprite; r.nameSig = name + '|' + (title || '') + '|' + (badgeIcon || '');
+}
+// Called every frame: fade/scale by distance, brighten the spectated target.
+function updateNameplates() {
+  for (const id in remotePlayers) {
+    const r = remotePlayers[id];
+    if (!r.nameSprite) continue;
+    const dist = camera.position.distanceTo(r.mesh.position);
+    const emphasize = isDead && spectateTargetId === id;
+    const fade = emphasize ? 1 : Math.max(0, Math.min(1, 1 - (dist - 8) / 22)); // fully visible <=8u, gone by 30u
+    r.nameSprite.material.opacity = fade;
+    r.nameSprite.visible = fade > 0.02;
+    const scale = emphasize ? 2.3 : 1.8;
+    if (r.nameSprite.scale.x !== scale) r.nameSprite.scale.set(scale, scale * 0.3, 1);
+  }
+}
+
+// ---------- İDARƏETMƏ ----------
+document.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if ((e.code === 'ShiftLeft' || e.code === 'ShiftRight') && !e.repeat) requestDash();
+  if (e.code === 'KeyE' && !e.repeat) interactWithSecret();
+  if (e.code === 'KeyG' && !e.repeat) sendEmote();
+  if (SLOT_KEYS[e.code] && !e.repeat) selectSlot(SLOT_KEYS[e.code]);
+});
+document.addEventListener('keyup', e => keys[e.code] = false);
+
+function interactWithSecret() {
+  if (!ws || ws.readyState !== WebSocket.OPEN || stunned || !jojoSecretObj) return;
+  if (camera.position.distanceTo(JOJO_SECRET_POS) > 3.2) return;
+  ws.send(JSON.stringify({ type: 'interact_secret' }));
+}
+document.getElementById('interactBtn').addEventListener('click', interactWithSecret);
+document.getElementById('interactBtn').addEventListener('touchstart', (e) => { e.preventDefault(); interactWithSecret(); });
+document.getElementById('emoteBtn').addEventListener('click', () => { if (IS_TOUCH_DEVICE) openEmoteWheel(); else sendEmote(); });
+document.getElementById('emoteBtn').addEventListener('touchstart', (e) => { e.preventDefault(); openEmoteWheel(); }, { passive: false });
+
+function startGame(mapName, mapSeed) {
+  menu.style.display = 'none';
+  hud.style.display = 'block';
+  initScene(mapName, mapSeed);
+  updateHealthUI();
+  renderer.domElement.addEventListener('click', () => {
+    renderer.domElement.requestPointerLock();
+    if (actx.state === 'suspended') actx.resume();
+  });
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mousedown', onShoot);
+  gameStarted = true;
+  animate();
+}
+
+function onMouseMove(e) {
+  if (stunned) return;
+  if (document.pointerLockElement !== renderer.domElement) return;
+  const invert = performance.now() < trollUntil ? -1 : 1;
+  yaw -= e.movementX * 0.0022 * invert;
+  pitch -= e.movementY * 0.0022 * invert;
+  pitch = Math.max(-Math.PI/2+0.05, Math.min(Math.PI/2-0.05, pitch));
+}
+
+function onShoot() {
+  if (stunned) return;
+  if (document.pointerLockElement !== renderer.domElement) return;
+  if (duckWeaponActive) { sfxQuack(); return; } // 🦆 yalnız səs, normal atəş yoxdur
+  if (mySlot === 'knife') { fireKnife(); return; }
+  if (mySlot === 'bomb') { fireBomb(); return; }
+  sfxShoot();
+  triggerRecoil();
+  spawnCasing();
+  // shoot = INTENT (sent first), hit = CLAIMED result (sent second, same aim). The server only
+  // accepts a hit that is backed by one fresh validated shoot, so a replayed hit does nothing.
+  const aimOrigin = camera.position.toArray();
+  const aimDir = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion).toArray();
+  ws.send(JSON.stringify({ type: 'shoot', origin: aimOrigin, dir: aimDir }));
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera({x:0,y:0}, camera);
+  const picked = pickRemoteTarget(raycaster); // fixed hitbox proxies, not the skin/capsule
+  if (picked) {
+    const targetId = picked.id;
+    if (targetId) {
+      // Client only CLAIMS who it aimed at. Damage/crit/kill are server-side; the server
+      // re-checks the claim against its own known positions and the paired shoot's aim.
+      ws.send(JSON.stringify({ type: 'hit', targetId, origin: aimOrigin, dir: aimDir }));
+    }
+  }
+}
+
+function triggerRecoil() { recoilT = 1; }
+
+function spawnCasing() {
+  const geo = new THREE.CylinderGeometry(0.025, 0.025, 0.09, 6);
+  const mat = new THREE.MeshStandardMaterial({ color:0xd4af37, metalness:0.7, roughness:0.3 });
+  const casing = new THREE.Mesh(geo, mat);
+  const camRight = new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
+  const camUp = new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion);
+  const camFwd = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+  const eject = camera.position.clone()
+    .add(camRight.clone().multiplyScalar(0.22))
+    .add(camUp.clone().multiplyScalar(-0.15))
+    .add(camFwd.clone().multiplyScalar(0.3));
+  casing.position.copy(eject);
+  casing.userData.vel = camRight.clone().multiplyScalar(1.2 + Math.random()*0.8)
+    .add(new THREE.Vector3(0, 2 + Math.random()*1.2, 0))
+    .add(camFwd.clone().multiplyScalar(-0.3 + Math.random()*0.3));
+  casing.userData.spin = new THREE.Vector3(Math.random()*10, Math.random()*10, Math.random()*10);
+  casing.userData.life = 3.5;
+  scene.add(casing);
+  casings.push(casing);
+}
+
+function updateCasings(dt) {
+  for (let i = casings.length - 1; i >= 0; i--) {
+    const c = casings[i];
+    c.userData.vel.y -= 9.8 * dt;
+    c.position.addScaledVector(c.userData.vel, dt);
+    c.rotation.x += c.userData.spin.x * dt;
+    c.rotation.y += c.userData.spin.y * dt;
+    c.rotation.z += c.userData.spin.z * dt;
+    if (c.position.y < 0.05) {
+      c.position.y = 0.05;
+      c.userData.vel.multiplyScalar(0.35);
+      c.userData.vel.y = Math.abs(c.userData.vel.y) * 0.3;
+      if (c.userData.vel.length() < 0.25) c.userData.vel.set(0,0,0);
+    }
+    c.userData.life -= dt;
+    if (c.userData.life <= 0) {
+      scene.remove(c);
+      casings.splice(i, 1);
+    }
+  }
+}
+
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.1);
+  windTick(dt);
+  gfxTick();
+  updateEmoteAnims(performance.now());
+  updateNameplates();
+  updateBananas(dt);
+  updateViewItems(dt);
+  updateExplosions(dt);
+
+  if (stunned) {
+    const remaining = stunUntil - performance.now();
+    if (remaining <= 0) {
+      endKnockdown();
+    } else {
+      const t = 1 - remaining / stunDuration;
+      const angle = t * Math.PI * 2 * 0.6;
+      camera.up.set(0, 0, -1);
+      camera.position.set(
+        stunnedOrigin.x + Math.sin(angle) * 1.5,
+        8,
+        stunnedOrigin.z + Math.cos(angle) * 1.5
+      );
+      camera.lookAt(stunnedOrigin.x, 0.4, stunnedOrigin.z);
+      renderer.render(scene, camera);
+      return;
+    }
+  }
+
+  camera.rotation.order = 'YXZ';
+  camera.rotation.y = yaw;
+  camera.rotation.x = pitch;
+
+  const speed = 6;
+  const forward = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw)); // az fərqli istiqamət hesablaması aşağıda düzəlir
+  const dir = new THREE.Vector3();
+  const camForward = new THREE.Vector3();
+  camera.getWorldDirection(camForward);
+  camForward.y = 0; camForward.normalize();
+  const camRight = new THREE.Vector3().crossVectors(camForward, new THREE.Vector3(0,1,0)).negate();
+
+  if (keys['KeyW']) dir.add(camForward);
+  if (keys['KeyS']) dir.sub(camForward);
+  if (keys['KeyD']) dir.add(camRight);
+  if (keys['KeyA']) dir.sub(camRight);
+  const localSpeed = dir.length() / Math.max(dt, 1e-6);
+  if (dir.lengthSq() > 0) dir.normalize().multiplyScalar(speed*dt);
+  updateFootsteps(window.BBAnim.deriveMoveState({ speed: localSpeed, dashActive: performance.now() < dashUntil, dead: isDead }), performance.now());
+
+  if (performance.now() < dashUntil) {
+    dir.add(dashDir.clone().multiplyScalar(16 * dt)); // dash boost
+  }
+  camera.position.add(dir);
+  { const r = BBMaps.resolveCircle(camera.position.x, camera.position.z, BBMaps.PLAYER_R, currentLayout); camera.position.x = r[0]; camera.position.z = r[1]; } // collide with the shared layout (null layout = no-op); stricter than the server's SERVER_R, so a valid client position is never rejected
+
+  // dash FOV "punch" effekti
+  if (camera._dashFovPunch > 0) {
+    camera._dashFovPunch *= 0.85;
+    camera.fov = 75 + camera._dashFovPunch;
+    camera.updateProjectionMatrix();
+    if (camera._dashFovPunch < 0.5) { camera.fov = 75; camera.updateProjectionMatrix(); camera._dashFovPunch = 0; }
+  }
+
+  // sadə sərhəd
+  camera.position.x = Math.max(-38, Math.min(38, camera.position.x));
+  camera.position.z = Math.max(-38, Math.min(38, camera.position.z));
+  camera.position.y = 1.6;
+
+  // troll pickup toqquşması
+  trollPickups.forEach(ball => {
+    ball.rotation.y += dt*2;
+    if (ball.visible && !isDead && performance.now() > (ball.userData.pendingUntil || 0) && ball.position.distanceTo(camera.position) < 1.2) {
+      // The server decides whether the pickup counts (distance/active/cooldown) and
+      // hides/respawns it for everyone via pickup_state; we only report the touch.
+      ball.userData.pendingUntil = performance.now() + 600;
+      if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type:'troll_pickup', pickupId: ball.userData.id }));
+    }
+  });
+
+  // remote oyunçuları rəvan hərəkət etdir (yıxılıb-yıxılmadığına baxaraq)
+  for (const id in remotePlayers) {
+    const r = remotePlayers[id];
+    if (r.fallenUntil && performance.now() < r.fallenUntil) {
+      r.mesh.position.lerp(new THREE.Vector3(r.targetPos.x, 0.4, r.targetPos.z), 0.3);
+      r.mesh.rotation.z = Math.PI/2;
+    } else {
+      r.mesh.rotation.z = 0;
+      const before = r.mesh.position.clone();
+      r.mesh.position.lerp(r.targetPos, 0.25);
+      const remoteSpeed = r.mesh.position.distanceTo(before) / Math.max(dt, 1e-6);
+      r.mesh.rotation.y = window.BBAnim.smoothAngle(r.mesh.rotation.y, r.targetRy, 10 * dt);
+      const state = window.BBAnim.deriveMoveState({ speed: remoteSpeed });
+      // lightweight visual-only bob, matches the state derived above (no gameplay effect)
+      const bob = state === 'run' ? Math.sin(performance.now() / 90) * 0.05 : (state === 'walk' ? Math.sin(performance.now() / 150) * 0.02 : 0);
+      r.mesh.position.y = r.targetPos.y + bob;
+    }
+  }
+
+  if (ws && ws.readyState === WebSocket.OPEN && !isDead) { // dead players are spectating; server ignores their updates anyway
+    ws.send(JSON.stringify({
+      type: 'update',
+      x: camera.position.x, y: camera.position.y, z: camera.position.z,
+      ry: yaw,
+    }));
+  }
+
+  updateCasings(dt);
+  if (viewGun) {
+    recoilT = Math.max(0, recoilT - dt*6);
+    viewGun.position.z = -0.55 + recoilT*0.08;
+  }
+
+  if (thorAnim) {
+    thorAnim.t += dt;
+    const p = Math.min(1, thorAnim.t / thorAnim.duration);
+    const ease = thorAnim.mode === 'strike' ? p*p : p*p*(3-2*p);
+    thorAnim.hammer.position.lerpVectors(thorAnim.start, thorAnim.end, ease);
+    thorAnim.hammer.rotation.y += dt * (thorAnim.mode === 'strike' ? 20 : 6);
+    if (p >= 1) {
+      if (thorAnim.mode === 'strike') { stopThorLightning(); if (thorLight) thorLight.visible = false; }
+      thorAnim = null;
+    }
+  }
+
+  for (let i = memeQuads.length - 1; i >= 0; i--) {
+    const m = memeQuads[i];
+    m.mesh.quaternion.copy(camera.quaternion);
+    m.life -= dt;
+    if (m.life < 0.5) m.mesh.material.opacity = Math.max(0, m.life / 0.5);
+    if (m.life <= 0) { scene.remove(m.mesh); memeQuads.splice(i,1); }
+  }
+
+  updateAshesFireEffects(dt);
+
+  // JoJo gizli referansına yaxınlıq yoxlaması
+  if (jojoSecretObj) {
+    const dist = camera.position.distanceTo(JOJO_SECRET_POS);
+    const btn = document.getElementById('interactBtn');
+    if (dist < 3 && !unlockedEffects.jojoRoad) {
+      btn.style.display = 'flex';
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+</script>
+</body>
+</html>

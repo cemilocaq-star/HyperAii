@@ -1,0 +1,1937 @@
+{
+ "meme/meme.jpg": {
+  "gpu_mb_with_mips": 0.7,
+  "kb": 5,
+  "kind": "texture",
+  "pot": false,
+  "size": [
+   360,
+   360
+  ]
+ },
+ "models/accessories/helmet/corroded_metal_texture_by_ketronpl-d6mnkhy.jpg": {
+  "gpu_mb_with_mips": 4.1,
+  "kb": 177,
+  "kind": "texture",
+  "pot": false,
+  "size": [
+   1032,
+   774
+  ]
+ },
+ "models/accessories/helmet/helmet.obj": {
+  "kb": 41,
+  "kind": "obj",
+  "mtl_present": {},
+  "mtl_status": {},
+  "mtllib": [],
+  "normals": false,
+  "objects": 3,
+  "size": [
+   3.034,
+   4.521,
+   5.09
+  ],
+  "tris": 620,
+  "usemtl": [],
+  "uv": false,
+  "vertex_colors": false,
+  "verts": 396
+ },
+ "models/accessories/omnitrix/omnitrix.obj": {
+  "kb": 145,
+  "kind": "obj",
+  "mtl_present": {},
+  "mtl_status": {},
+  "mtllib": [],
+  "normals": true,
+  "objects": 22,
+  "size": [
+   23.988,
+   7.682,
+   24.811
+  ],
+  "tris": 2483,
+  "usemtl": [
+   "Material.004",
+   "Material.014",
+   "Material.020",
+   "Material.022",
+   "Material.023",
+   "Material.024",
+   "Material.025",
+   "Metal",
+   "green"
+  ],
+  "uv": false,
+  "vertex_colors": false,
+  "verts": 1395
+ },
+ "models/furniture/bedDouble.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 23,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "carpetWhite",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metal",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "carpet",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 7,
+  "skins": 0,
+  "tangents": false,
+  "tris": 264,
+  "uv": true
+ },
+ "models/furniture/bookcaseOpen.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 18,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 1,
+  "skins": 0,
+  "tangents": false,
+  "tris": 320,
+  "uv": true
+ },
+ "models/furniture/chair.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 11,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 1,
+  "skins": 0,
+  "tangents": false,
+  "tris": 170,
+  "uv": true
+ },
+ "models/furniture/chairCushion.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 12,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "carpet",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 198,
+  "uv": true
+ },
+ "models/furniture/doorway.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 14,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metal",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 3,
+  "skins": 0,
+  "tangents": false,
+  "tris": 188,
+  "uv": true
+ },
+ "models/furniture/kitchenCabinet.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 10,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metal",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "woodDark",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 5,
+  "skins": 0,
+  "tangents": false,
+  "tris": 114,
+  "uv": true
+ },
+ "models/furniture/kitchenFridge.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 20,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metalLight",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metalDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metal",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "BLEND",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "glass",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 7,
+  "skins": 0,
+  "tangents": false,
+  "tris": 250,
+  "uv": true
+ },
+ "models/furniture/lampRoundFloor.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 6,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metal",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "lamp",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 76,
+  "uv": true
+ },
+ "models/furniture/loungeSofa.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 9,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "carpet",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 128,
+  "uv": true
+ },
+ "models/furniture/loungeSofaCorner.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 13,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "carpet",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 190,
+  "uv": true
+ },
+ "models/furniture/pottedPlant.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 7,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "woodDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "plant",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 3,
+  "skins": 0,
+  "tangents": false,
+  "tris": 60,
+  "uv": true
+ },
+ "models/furniture/rugRectangle.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 3,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "carpet",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "carpetDarker",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 28,
+  "uv": true
+ },
+ "models/furniture/table.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 8,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 1,
+  "skins": 0,
+  "tangents": false,
+  "tris": 120,
+  "uv": true
+ },
+ "models/furniture/tableCoffee.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 8,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 1,
+  "skins": 0,
+  "tangents": false,
+  "tris": 124,
+  "uv": true
+ },
+ "models/furniture/televisionModern.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 6,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metalDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metal",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 72,
+  "uv": true
+ },
+ "models/furniture/wall.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 3,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "_defaultMat",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metalDark",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 3,
+  "skins": 0,
+  "tangents": false,
+  "tris": 12,
+  "uv": true
+ },
+ "models/furniture/wallCorner.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 4,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metalDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "_defaultMat",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 3,
+  "skins": 0,
+  "tangents": false,
+  "tris": 28,
+  "uv": true
+ },
+ "models/furniture/wallWindow.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 10,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "metalDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "_defaultMat",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "BLEND",
+    "baseColorTexture": false,
+    "emissive": true,
+    "metallic": 0,
+    "metallicRoughnessTexture": false,
+    "name": "glass",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 5,
+  "skins": 0,
+  "tangents": false,
+  "tris": 108,
+  "uv": true
+ },
+ "models/nature/fence_corner.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 8,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 116,
+  "uv": true
+ },
+ "models/nature/fence_simple.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 6,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "wood",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodDark",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 64,
+  "uv": true
+ },
+ "models/nature/flower_purpleA.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 7,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "grass",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "colorPurple",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 76,
+  "uv": true
+ },
+ "models/nature/flower_redA.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 7,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "grass",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "colorRed",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 76,
+  "uv": true
+ },
+ "models/nature/flower_yellowA.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 7,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "grass",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "colorYellow",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 76,
+  "uv": true
+ },
+ "models/nature/grass_large.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 18,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "grass",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 1,
+  "skins": 0,
+  "tangents": false,
+  "tris": 224,
+  "uv": true
+ },
+ "models/nature/log_stack.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 11,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodBark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodInner",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 184,
+  "uv": true
+ },
+ "models/nature/mushroom_redGroup.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 15,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "_defaultMat",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "colorRed",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 144,
+  "uv": true
+ },
+ "models/nature/path_stone.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 12,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "stoneDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "stone",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "_defaultMat",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 3,
+  "skins": 0,
+  "tangents": false,
+  "tris": 136,
+  "uv": true
+ },
+ "models/nature/rock_largeA.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 7,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "dirt",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "grass",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 80,
+  "uv": true
+ },
+ "models/nature/rock_largeC.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 7,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "dirt",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "grass",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 72,
+  "uv": true
+ },
+ "models/nature/rock_smallA.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 3,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "grass",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "dirt",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 16,
+  "uv": true
+ },
+ "models/nature/rock_smallC.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 3,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "dirt",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "grass",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 16,
+  "uv": true
+ },
+ "models/nature/stump_round.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 6,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodBark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodInner",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 56,
+  "uv": true
+ },
+ "models/nature/tree_oak.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 14,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "leafsGreen",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodBark",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 196,
+  "uv": true
+ },
+ "models/nature/tree_pineRoundA.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 14,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodBarkDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "leafsDark",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 204,
+  "uv": true
+ },
+ "models/nature/tree_pineTallA.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 7,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodBarkDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "leafsDark",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 78,
+  "uv": true
+ },
+ "models/nature/tree_pineTallB.glb": {
+  "animations": 0,
+  "images": 0,
+  "kb": 7,
+  "kind": "glb",
+  "materials": [
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "leafsDark",
+    "normalTexture": false,
+    "roughness": 1
+   },
+   {
+    "alphaMode": "OPAQUE",
+    "baseColorTexture": false,
+    "emissive": false,
+    "metallic": 1,
+    "metallicRoughnessTexture": false,
+    "name": "woodBarkDark",
+    "normalTexture": false,
+    "roughness": 1
+   }
+  ],
+  "normals": true,
+  "prims": 2,
+  "skins": 0,
+  "tangents": false,
+  "tris": 78,
+  "uv": true
+ },
+ "models/skins/ironman/ironman.obj": {
+  "kb": 235,
+  "kind": "obj",
+  "mtl_present": {},
+  "mtl_status": {},
+  "mtllib": [],
+  "normals": true,
+  "objects": 0,
+  "size": [
+   1.764,
+   1.8,
+   1.002
+  ],
+  "tris": 5998,
+  "usemtl": [],
+  "uv": false,
+  "vertex_colors": true,
+  "verts": 1054
+ },
+ "models/skins/pilot/pilot.obj": {
+  "kb": 290,
+  "kind": "obj",
+  "mtl_present": {},
+  "mtl_status": {},
+  "mtllib": [],
+  "normals": true,
+  "objects": 0,
+  "size": [
+   0.613,
+   1.8,
+   0.348
+  ],
+  "tris": 5989,
+  "usemtl": [],
+  "uv": false,
+  "vertex_colors": true,
+  "verts": 1717
+ },
+ "models/skins/skeleton/skeleton.obj": {
+  "kb": 344,
+  "kind": "obj",
+  "mtl_present": {},
+  "mtl_status": {},
+  "mtllib": [],
+  "normals": true,
+  "objects": 0,
+  "size": [
+   0.572,
+   1.8,
+   0.288
+  ],
+  "tris": 5996,
+  "usemtl": [],
+  "uv": false,
+  "vertex_colors": true,
+  "verts": 2453
+ },
+ "models/skins/vader/vader.obj": {
+  "kb": 292,
+  "kind": "obj",
+  "mtl_present": {},
+  "mtl_status": {},
+  "mtllib": [],
+  "normals": true,
+  "objects": 0,
+  "size": [
+   0.895,
+   1.8,
+   0.834
+  ],
+  "tris": 6000,
+  "usemtl": [],
+  "uv": false,
+  "vertex_colors": true,
+  "verts": 1728
+ },
+ "models/thor/mjolnir.obj": {
+  "kb": 3549,
+  "kind": "obj",
+  "mtl_present": {},
+  "mtl_status": {},
+  "mtllib": [],
+  "normals": true,
+  "objects": 24,
+  "size": [
+   11.258,
+   5.251,
+   2.978
+  ],
+  "tris": 59999,
+  "usemtl": [],
+  "uv": false,
+  "vertex_colors": false,
+  "verts": 24855
+ },
+ "models/thor/thor_color.jpg": {
+  "gpu_mb_with_mips": 20.8,
+  "kb": 1240,
+  "kind": "texture",
+  "pot": false,
+  "size": [
+   2024,
+   2024
+  ]
+ },
+ "models/thor/thor_normal.jpg": {
+  "gpu_mb_with_mips": 20.8,
+  "kb": 580,
+  "kind": "texture",
+  "pot": false,
+  "size": [
+   2024,
+   2024
+  ]
+ },
+ "models/weapons/all_weapons.obj": {
+  "kb": 1363,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 13,
+  "size": [
+   24.118,
+   5.411,
+   121.256
+  ],
+  "tris": 20806,
+  "usemtl": [
+   "Material.001",
+   "Material.002",
+   "Material.003",
+   "Material.004",
+   "Material.005",
+   "Material.006",
+   "Material.007",
+   "Material.008",
+   "Material.009",
+   "Material.010",
+   "Material.011",
+   "Material.012",
+   "None"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 10758
+ },
+ "models/weapons/melee/knife/knife.obj": {
+  "kb": 142,
+  "kind": "obj",
+  "mtl_present": {},
+  "mtl_status": {},
+  "mtllib": [],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   0.15,
+   2.055,
+   9.516
+  ],
+  "tris": 2816,
+  "usemtl": [],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 1754
+ },
+ "models/weapons/split/weapon_001.obj": {
+  "kb": 125,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   24.118,
+   5.335,
+   0.964
+  ],
+  "tris": 2168,
+  "usemtl": [
+   "Material.001"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 1122
+ },
+ "models/weapons/split/weapon_002.obj": {
+  "kb": 77,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   20.766,
+   3.848,
+   0.865
+  ],
+  "tris": 1352,
+  "usemtl": [
+   "Material.002"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 696
+ },
+ "models/weapons/split/weapon_003.obj": {
+  "kb": 218,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   21.744,
+   3.998,
+   0.909
+  ],
+  "tris": 3592,
+  "usemtl": [
+   "Material.003"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 1846
+ },
+ "models/weapons/split/weapon_004.obj": {
+  "kb": 102,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   20.992,
+   3.285,
+   1.707
+  ],
+  "tris": 1640,
+  "usemtl": [
+   "Material.004"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 836
+ },
+ "models/weapons/split/weapon_005.obj": {
+  "kb": 109,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   14.83,
+   4.546,
+   1.089
+  ],
+  "tris": 1924,
+  "usemtl": [
+   "None"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 988
+ },
+ "models/weapons/split/weapon_006.obj": {
+  "kb": 66,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   13.294,
+   3.717,
+   0.64
+  ],
+  "tris": 1124,
+  "usemtl": [
+   "Material.005"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 596
+ },
+ "models/weapons/split/weapon_007.obj": {
+  "kb": 102,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   12.502,
+   3.588,
+   0.448
+  ],
+  "tris": 1740,
+  "usemtl": [
+   "Material.006"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 908
+ },
+ "models/weapons/split/weapon_008.obj": {
+  "kb": 67,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   13.294,
+   3.717,
+   0.64
+  ],
+  "tris": 1124,
+  "usemtl": [
+   "Material.007"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 596
+ },
+ "models/weapons/split/weapon_009.obj": {
+  "kb": 53,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   11.329,
+   2.716,
+   0.865
+  ],
+  "tris": 966,
+  "usemtl": [
+   "Material.008"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 510
+ },
+ "models/weapons/split/weapon_010.obj": {
+  "kb": 104,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   15.395,
+   3.872,
+   0.576
+  ],
+  "tris": 1780,
+  "usemtl": [
+   "Material.009"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 912
+ },
+ "models/weapons/split/weapon_011.obj": {
+  "kb": 53,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   8.531,
+   4.106,
+   0.317
+  ],
+  "tris": 944,
+  "usemtl": [
+   "Material.010"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 494
+ },
+ "models/weapons/split/weapon_012.obj": {
+  "kb": 33,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   3.885,
+   2.376,
+   0.384
+  ],
+  "tris": 568,
+  "usemtl": [
+   "Material.011"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 296
+ },
+ "models/weapons/split/weapon_013.obj": {
+  "kb": 120,
+  "kind": "obj",
+  "mtl_present": {
+   "all weapons.mtl": true
+  },
+  "mtl_status": {
+   "all weapons.mtl": "RECONSTRUCTED"
+  },
+  "mtllib": [
+   "all weapons.mtl"
+  ],
+  "normals": true,
+  "objects": 1,
+  "size": [
+   4.49,
+   2.178,
+   0.804
+  ],
+  "tris": 1884,
+  "usemtl": [
+   "Material.012"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 958
+ },
+ "models/weapons/throwable/grenade/Grenade.obj": {
+  "kb": 1217,
+  "kind": "obj",
+  "mtl_present": {
+   "Grenade.mtl": true
+  },
+  "mtl_status": {
+   "Grenade.mtl": "ORIGINAL"
+  },
+  "mtllib": [
+   "Grenade.mtl"
+  ],
+  "normals": true,
+  "objects": 2,
+  "size": [
+   9.375,
+   18.25,
+   9.521
+  ],
+  "tris": 10207,
+  "usemtl": [
+   "pCube5SG",
+   "pCube5SG1",
+   "pCube5SG2"
+  ],
+  "uv": true,
+  "vertex_colors": false,
+  "verts": 5109
+ },
+ "textures/skyboxes/day.png": {
+  "gpu_mb_with_mips": 42.7,
+  "kb": 1027,
+  "kind": "texture",
+  "pot": true,
+  "size": [
+   4096,
+   2048
+  ]
+ },
+ "textures/skyboxes/day_2k.png": {
+  "gpu_mb_with_mips": 10.7,
+  "kb": 466,
+  "kind": "texture",
+  "pot": true,
+  "size": [
+   2048,
+   1024
+  ]
+ },
+ "textures/skyboxes/night.png": {
+  "gpu_mb_with_mips": 42.7,
+  "kb": 1074,
+  "kind": "texture",
+  "pot": true,
+  "size": [
+   4096,
+   2048
+  ]
+ }
+}

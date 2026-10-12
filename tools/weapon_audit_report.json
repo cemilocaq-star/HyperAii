@@ -1,0 +1,59 @@
+{
+  "obj_files_total": 2,
+  "all_weapons_objects": 13,
+  "groups": 0,
+  "materials_used": [
+    "Material.001",
+    "Material.002",
+    "Material.003",
+    "Material.004",
+    "Material.005",
+    "Material.006",
+    "Material.007",
+    "Material.008",
+    "Material.009",
+    "Material.010",
+    "Material.011",
+    "Material.012",
+    "None"
+  ],
+  "vertices": 10758,
+  "faces": 8629,
+  "connected_components": 171,
+  "spatial_clusters": {
+    "0.05": 14,
+    "0.25": 13,
+    "0.5": 13,
+    "1.0": 13,
+    "2.0": 13
+  },
+  "mtllib_refs": [
+    "all weapons.mtl"
+  ],
+  "mtl_missing": [
+    "all weapons.mtl"
+  ],
+  "materials_without_definition": [
+    "Material.001",
+    "Material.002",
+    "Material.003",
+    "Material.004",
+    "Material.005",
+    "Material.006",
+    "Material.007",
+    "Material.008",
+    "Material.009",
+    "Material.010",
+    "Material.011",
+    "Material.012",
+    "None"
+  ],
+  "zero_size_meshes": 0,
+  "degenerate_faces": 0,
+  "out_of_range_indices": 0,
+  "tiny_components_lt20_faces": 34,
+  "exported_weapon_count": 13,
+  "cluster_count_stable_across_gaps": true,
+  "real_model_count": 13,
+  "verdict": "MODEL COUNT = 13 (objects == stable spatial clusters). 94 is NOT confirmed. MTL MISSING: materials/textures cannot be linked."
+}

@@ -1,0 +1,498 @@
+{
+  "tool": "tools/glsl_compile_check.py",
+  "browser": "141.0.7390.37",
+  "glsl_sha256": "420ed291c4e4f1b891df18090c850e60a901d3ac4bdaa077eaefd6cf1ec57676",
+  "contexts": {
+    "webgl": {
+      "available": true,
+      "version": "WebGL 1.0 (OpenGL ES 2.0 Chromium)"
+    },
+    "webgl2": {
+      "available": true,
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+    }
+  },
+  "shaders": [
+    {
+      "context": "webgl",
+      "label": "sway-vertex",
+      "vertexCompiled": true,
+      "fragmentCompiled": true,
+      "linked": true,
+      "log": ""
+    },
+    {
+      "context": "webgl",
+      "label": "particle-vertex+fragment(mediump)",
+      "vertexCompiled": true,
+      "fragmentCompiled": true,
+      "linked": true,
+      "log": ""
+    },
+    {
+      "context": "webgl",
+      "label": "particle-vertex+fragment(highp)",
+      "vertexCompiled": true,
+      "fragmentCompiled": true,
+      "linked": true,
+      "log": ""
+    },
+    {
+      "context": "webgl2",
+      "label": "sway-vertex",
+      "vertexCompiled": true,
+      "fragmentCompiled": true,
+      "linked": true,
+      "log": ""
+    },
+    {
+      "context": "webgl2",
+      "label": "particle-vertex+fragment(mediump)",
+      "vertexCompiled": true,
+      "fragmentCompiled": true,
+      "linked": true,
+      "log": ""
+    },
+    {
+      "context": "webgl2",
+      "label": "particle-vertex+fragment(highp)",
+      "vertexCompiled": true,
+      "fragmentCompiled": true,
+      "linked": true,
+      "log": ""
+    },
+    {
+      "context": "webgl2",
+      "label": "sway-es300-transform-feedback",
+      "vertexCompiled": true,
+      "fragmentCompiled": true,
+      "linked": true,
+      "log": ""
+    }
+  ],
+  "particles": {
+    "webgl": {
+      "glError": 0,
+      "litPixels": 516,
+      "pointSizeRange": [
+        1,
+        1023
+      ]
+    },
+    "webgl2": {
+      "glError": 0,
+      "litPixels": 516,
+      "pointSizeRange": [
+        1,
+        1023
+      ]
+    }
+  },
+  "sway": [
+    {
+      "case": "identity",
+      "glError": 0,
+      "rows": [
+        {
+          "objectHeight": 0,
+          "worldHeight": 0.0,
+          "displacement": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "expected": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "maxAbsError": 0.0
+        },
+        {
+          "objectHeight": 0.5,
+          "worldHeight": 0.5,
+          "displacement": [
+            0.00155,
+            0.0,
+            0.00117
+          ],
+          "expected": [
+            0.00155,
+            0.0,
+            0.00117
+          ],
+          "maxAbsError": 0.0
+        },
+        {
+          "objectHeight": 1,
+          "worldHeight": 1.0,
+          "displacement": [
+            0.007,
+            0.0,
+            0.00525
+          ],
+          "expected": [
+            0.007,
+            0.0,
+            0.00525
+          ],
+          "maxAbsError": 0.0
+        },
+        {
+          "objectHeight": 2,
+          "worldHeight": 2.0,
+          "displacement": [
+            0.03072,
+            0.0,
+            0.02304
+          ],
+          "expected": [
+            0.03072,
+            0.0,
+            0.02304
+          ],
+          "maxAbsError": 1e-06
+        },
+        {
+          "objectHeight": 3,
+          "worldHeight": 3.0,
+          "displacement": [
+            0.06211,
+            0.0,
+            0.04658
+          ],
+          "expected": [
+            0.06211,
+            0.0,
+            0.04658
+          ],
+          "maxAbsError": 1e-06
+        },
+        {
+          "objectHeight": 4.5,
+          "worldHeight": 4.5,
+          "displacement": [
+            0.08541,
+            0.0,
+            0.06406
+          ],
+          "expected": [
+            0.08541,
+            0.0,
+            0.06406
+          ],
+          "maxAbsError": 1e-06
+        },
+        {
+          "objectHeight": 6,
+          "worldHeight": 6.0,
+          "displacement": [
+            0.10402,
+            0.0,
+            0.07802
+          ],
+          "expected": [
+            0.10401,
+            0.0,
+            0.07801
+          ],
+          "maxAbsError": 1.3e-05
+        },
+        {
+          "objectHeight": 9,
+          "worldHeight": 6.0,
+          "displacement": [
+            0.10402,
+            0.0,
+            0.07802
+          ],
+          "expected": [
+            0.10401,
+            0.0,
+            0.07801
+          ],
+          "maxAbsError": 1.3e-05
+        }
+      ],
+      "worstError": 1.3e-05,
+      "baseRowDisplacement": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "maxPush": 0.1300280000615252,
+      "verticalDriftMax": 0.0
+    },
+    {
+      "case": "flower amp, gust 1",
+      "glError": 0,
+      "rows": [
+        {
+          "objectHeight": 0,
+          "worldHeight": 0.0,
+          "displacement": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "expected": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "maxAbsError": 0.0
+        },
+        {
+          "objectHeight": 0.5,
+          "worldHeight": 0.5,
+          "displacement": [
+            0.00845,
+            0.0,
+            0.00634
+          ],
+          "expected": [
+            0.00845,
+            0.0,
+            0.00634
+          ],
+          "maxAbsError": 0.0
+        },
+        {
+          "objectHeight": 1,
+          "worldHeight": 1.0,
+          "displacement": [
+            0.03323,
+            0.0,
+            0.02492
+          ],
+          "expected": [
+            0.03323,
+            0.0,
+            0.02492
+          ],
+          "maxAbsError": 0.0
+        },
+        {
+          "objectHeight": 2,
+          "worldHeight": 2.0,
+          "displacement": [
+            0.13907,
+            0.0,
+            0.10431
+          ],
+          "expected": [
+            0.13908,
+            0.0,
+            0.10431
+          ],
+          "maxAbsError": 2e-06
+        },
+        {
+          "objectHeight": 3,
+          "worldHeight": 3.0,
+          "displacement": [
+            0.34979,
+            0.0,
+            0.26235
+          ],
+          "expected": [
+            0.3498,
+            0.0,
+            0.26235
+          ],
+          "maxAbsError": 2e-06
+        },
+        {
+          "objectHeight": 4.5,
+          "worldHeight": 4.5,
+          "displacement": [
+            0.89717,
+            0.0,
+            0.67288
+          ],
+          "expected": [
+            0.89719,
+            0.0,
+            0.67289
+          ],
+          "maxAbsError": 1.4e-05
+        },
+        {
+          "objectHeight": 6,
+          "worldHeight": 6.0,
+          "displacement": [
+            1.54627,
+            0.0,
+            1.1597
+          ],
+          "expected": [
+            1.54627,
+            0.0,
+            1.1597
+          ],
+          "maxAbsError": 1e-06
+        },
+        {
+          "objectHeight": 9,
+          "worldHeight": 6.0,
+          "displacement": [
+            1.54627,
+            0.0,
+            1.1597
+          ],
+          "expected": [
+            1.54627,
+            0.0,
+            1.1597
+          ],
+          "maxAbsError": 1e-06
+        }
+      ],
+      "worstError": 1.4e-05,
+      "baseRowDisplacement": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "maxPush": 1.9328360000010347,
+      "verticalDriftMax": 0.0
+    },
+    {
+      "case": "rotated 1.2 rad + scale 1.8 + translated",
+      "glError": 0,
+      "rows": [
+        {
+          "objectHeight": 0,
+          "worldHeight": 0.0,
+          "displacement": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "expected": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "maxAbsError": 0.0
+        },
+        {
+          "objectHeight": 0.5,
+          "worldHeight": 0.9,
+          "displacement": [
+            0.01213,
+            0.0,
+            0.0091
+          ],
+          "expected": [
+            0.01213,
+            0.0,
+            0.0091
+          ],
+          "maxAbsError": 0.0
+        },
+        {
+          "objectHeight": 1,
+          "worldHeight": 1.8,
+          "displacement": [
+            0.04635,
+            0.0,
+            0.03477
+          ],
+          "expected": [
+            0.04635,
+            0.0,
+            0.03477
+          ],
+          "maxAbsError": 1e-06
+        },
+        {
+          "objectHeight": 2,
+          "worldHeight": 3.6,
+          "displacement": [
+            0.14453,
+            0.0,
+            0.1084
+          ],
+          "expected": [
+            0.14453,
+            0.0,
+            0.1084
+          ],
+          "maxAbsError": 2e-06
+        },
+        {
+          "objectHeight": 3,
+          "worldHeight": 5.4,
+          "displacement": [
+            0.30574,
+            0.0,
+            0.2293
+          ],
+          "expected": [
+            0.30573,
+            0.0,
+            0.2293
+          ],
+          "maxAbsError": 7e-06
+        },
+        {
+          "objectHeight": 4.5,
+          "worldHeight": 6.0,
+          "displacement": [
+            0.40537,
+            0.0,
+            0.30403
+          ],
+          "expected": [
+            0.40537,
+            0.0,
+            0.30403
+          ],
+          "maxAbsError": 6e-06
+        },
+        {
+          "objectHeight": 6,
+          "worldHeight": 6.0,
+          "displacement": [
+            0.40537,
+            0.0,
+            0.30403
+          ],
+          "expected": [
+            0.40537,
+            0.0,
+            0.30403
+          ],
+          "maxAbsError": 6e-06
+        },
+        {
+          "objectHeight": 9,
+          "worldHeight": 6.0,
+          "displacement": [
+            0.40537,
+            0.0,
+            0.30403
+          ],
+          "expected": [
+            0.40537,
+            0.0,
+            0.30403
+          ],
+          "maxAbsError": 6e-06
+        }
+      ],
+      "worstError": 7e-06,
+      "baseRowDisplacement": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "maxPush": 0.5067140000039471,
+      "verticalDriftMax": 0.0
+    }
+  ],
+  "errors": [],
+  "notes": "Real WebGL (ANGLE/SwiftShader software GPU) with a MOCK three.js prefix. Proves GLSL compile/link/execute; not the full three.js program, not visuals, not real/mobile GPUs.",
+  "all_ok": true
+}

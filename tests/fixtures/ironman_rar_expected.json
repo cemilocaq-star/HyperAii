@@ -1,0 +1,14 @@
+{
+ "mtl": {
+  "name": "IronMan\\IronMan.mtl",
+  "unp": 1162,
+  "crc": "b2bf590a"
+ },
+ "max_prefix": {
+  "unp": 300000,
+  "verify_bytes": 282624,
+  "crc_first_verify_bytes": "94e84421",
+  "filters_applied": 4,
+  "note": "includes the first keep-old-tables LZ table read (in=22168,out=275567)"
+ }
+}
